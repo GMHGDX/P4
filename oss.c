@@ -61,8 +61,8 @@ int main(int argc, char *argv[]){
     //Open the log file before input begins 
     fileLogging = fopen(logFile, "w+");
 
-    fprintf(fileLogging, "The name of your logfile: ", logFile);
-    printf("The name of your logfile: ", logFile);
+    fprintf(fileLogging, "The name of your logfile: %s", logFile);
+    printf("The name of your logfile: %s", logFile);
     
     //beginning of sending and recieving messages 
     msgbuffer buf0, buf1;
