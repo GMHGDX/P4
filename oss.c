@@ -134,7 +134,7 @@ int main(int argc, char *argv[]){
         exit(1);
     }
 
-    printf("Parent %d received message: %s was my message and my int data was %d\n",getpid(),rcvbuf.strData,rcvbuf.intData);
+    printf("Parent %d received message: %s my int data was %d\n",getpid(),rcvbuf.strData,rcvbuf.intData);
 
     // now a message only to child0, not child1
     buf0.mtype = child[0];
