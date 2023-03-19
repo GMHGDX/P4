@@ -44,5 +44,10 @@ int main(int argc, char *argv[]){
     //Open the log file before input begins 
     fileLogging = fopen(logFile, "w+");
 
+    fprintf(fileLogging, "The name of your logfile: ", logFile);
     printf("The name of your logfile: ", logFile);
+
+    //close the log file
+    fclose(fileLogging);
+    return 0;
 }
