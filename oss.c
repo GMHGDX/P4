@@ -65,7 +65,7 @@ int main(int argc, char *argv[]){
     printf("The name of your logfile: %s\n", logFile);
     
     //beginning of sending and recieving messages 
-    msgbuffer buf0, buf1;
+    msgbuffer buf0;
     int msqid;
     key_t key;
 
@@ -114,13 +114,13 @@ int main(int argc, char *argv[]){
     }
 
     // lets send a message only to child1, not child0
-    buf1.mtype = child[0];
-    buf1.intData = child[0]; // we will give it the pid we are sending to, so we know it received it
+    buf0.mtype = child[0];
+    buf0.intData = child[0]; // we will give it the pid we are sending to, so we know it received it
     
-    strcpy(buf1.strData,"Message to child 1\n");
+    strcpy(buf0.strData,"Message to child 1\n");
     
     //send message to worker process
-    if (msgsnd(msqid, &buf1, sizeof(msgbuffer)-sizeof(long), 0) == -1) {
+    if (msgsnd(msqid, &buf0, sizeof(msgbuffer)-sizeof(long), 0) == -1) {
         perror("msgsnd to child 1 failed\n");
         exit(1);
     }
