@@ -157,10 +157,10 @@ int main(int argc, char *argv[]){
         printf("sleeping for a sec");
         sleep(maxSec);
         
-        if(i == 3){
-            printf("3 processes done, exiting loop");
-            break;
-        }
+        // if(i == 3){
+        //     printf("3 processes done, exiting loop");
+        //     break;
+        // }
     }
 
     // get rid of message queue
