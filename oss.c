@@ -139,7 +139,7 @@ int childNum = 0;
         }
 
         //send message to worker process
-        if (msgsnd(msqid, &buf0, sizeof(msgbuffer)-sizeof(long), 0) == -1) {
+        if (msgsnd(msqid, &buf1, sizeof(msgbuffer)-sizeof(long), 0) == -1) {
             perror("msgsnd to child 1 failed\n");
             exit(1);
         }
