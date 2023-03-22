@@ -129,7 +129,7 @@ int main(int argc, char *argv[]){
         buf0.mtype = child[childNum];
         buf0.intData = child[childNum]; // we will give it the pid we are sending to, so we know it received it
         
-        strcpy(buf0.strData,"Message to child 1\n");
+        strcpy(buf0.strData,"Message to child %d\n", childNum);
         
         //send message to worker process
         if (msgsnd(msqid, &buf0, sizeof(msgbuffer)-sizeof(long), 0) == -1) {
@@ -154,7 +154,7 @@ int main(int argc, char *argv[]){
         }
         
         i++;
-        printf("sleeping for a sec");
+        printf("sleeping for a sec\n\n\n\n");
         sleep(maxSec);
         
         // if(i == 3){
