@@ -130,19 +130,25 @@ int childNum = 0;
 
         if (childNum == 0){
         strcpy(buf0.strData,"Message to child 0\n");
-        }
-        if (childNum == 1){
-        strcpy(buf0.strData,"Message to child 1\n");
-        }
-        if (childNum == 1){
-        strcpy(buf0.strData,"Message to child 2\n");
-        }
-
         //send message to worker process
         if (msgsnd(msqid, &buf0, sizeof(msgbuffer)-sizeof(long), 0) == -1) {
             perror("msgsnd to child 1 failed\n");
             exit(1);
         }
+        }
+        if (childNum == 1){
+        strcpy(buf1.strData,"Message to child 1\n");
+        //send message to worker process
+        if (msgsnd(msqid, &buf1, sizeof(msgbuffer)-sizeof(long), 0) == -1) {
+            perror("msgsnd to child 1 failed\n");
+            exit(1);
+        }
+        }
+        if (childNum == 1){
+        strcpy(buf0.strData,"Message to child 2\n");
+        }
+
+        
 
         msgbuffer rcvbuf;
 
