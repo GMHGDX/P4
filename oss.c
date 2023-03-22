@@ -69,7 +69,7 @@ int main(int argc, char *argv[]){
     fileLogging = fopen(logFile, "w+");
     
     //beginning of sending and recieving messages 
-    
+    msgbuffer buffer0;
     int msqid;
     key_t key;
 
@@ -90,7 +90,7 @@ int main(int argc, char *argv[]){
     printf("Message queue set up\n");
 
     while(1) {// store pids of our first two children to launch
-        msgbuffer buffer0;
+        
         int childNum = 0;
         pid_t child[childNum];
         
@@ -127,9 +127,9 @@ int main(int argc, char *argv[]){
 
         // lets send a message only to child1, not child0
         buffer0.mtype = child[childNum];
-        bufffer0.intData = child[childNum]; // we will give it the pid we are sending to, so we know it received it
+        buffer0.intData = child[childNum]; // we will give it the pid we are sending to, so we know it received it
         
-        strcpy(buf.strData,"Message to child 1\n");
+        strcpy(buffer0.strData,"Message to child 1\n");
         
         //send message to worker process
         if (msgsnd(msqid, &buf, sizeof(msgbuffer)-sizeof(long), 0) == -1) {
