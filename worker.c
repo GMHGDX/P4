@@ -27,7 +27,7 @@ int main(int argc, char *argv[]){
         exit(1);
     }
 
-    // create our message queue
+    //access oss.c message queue
     if ((msqid = msgget(key, PERMS)) == -1) {
         perror("msgget in child");
         exit(1);

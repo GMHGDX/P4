@@ -61,8 +61,8 @@ int main(int argc, char *argv[]){
     //Open the log file before input begins 
     fileLogging = fopen(logFile, "w+");
 
-    fprintf(fileLogging, "The name of your logfile: %s", logFile);
-    printf("The name of your logfile: %s", logFile);
+    fprintf(fileLogging, "The name of your logfile: %s\n", logFile);
+    printf("The name of your logfile: %s\n", logFile);
     
     //beginning of sending and recieving messages 
     msgbuffer buf0, buf1;
@@ -86,11 +86,11 @@ int main(int argc, char *argv[]){
     printf("Message queue set up\n");
 
     // store pids of our first two children to launch
-    pid_t child[2];
+    pid_t child[1];
     int i = 0;
 
     // create our two children
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < 1; i++) {
         // lets fork off a child
         pid_t pid = fork();
 
@@ -114,8 +114,8 @@ int main(int argc, char *argv[]){
     }
 
     // lets send a message only to child1, not child0
-    buf1.mtype = child[1];
-    buf1.intData = child[1]; // we will give it the pid we are sending to, so we know it received it
+    buf1.mtype = child[0];
+    buf1.intData = child[0]; // we will give it the pid we are sending to, so we know it received it
     
     strcpy(buf1.strData,"Message to child 1\n");
     
@@ -136,25 +136,6 @@ int main(int argc, char *argv[]){
 
     printf("Parent %d received message: %s my int data was %d\n",getpid(),rcvbuf.strData,rcvbuf.intData);
 
-    // now a message only to child0, not child1
-    buf0.mtype = child[0];
-    buf0.intData = child[0];
-
-    strcpy(buf0.strData,"Message to child 0\n");
-
-    if (msgsnd(msqid, &buf0, sizeof(msgbuffer)-sizeof(long), 0) == -1) {
-        perror("msgsnd to child 0 failed\n");
-        exit(1);
-    }
-
-    // Now get the message back from the second child
-    if (msgrcv(msqid, &rcvbuf,sizeof(msgbuffer), getpid(),0) == -1) {
-        perror("failed to receive message in parent\n");
-        exit(1);
-    }
-
-    printf("Parent %d received message: %s was my message and my int data was %d\n",getpid(),rcvbuf.strData,rcvbuf.intData);
-
     // wait for children to end
     for (i = 0; i < 2; i++) {
         wait(0);
@@ -165,8 +146,10 @@ int main(int argc, char *argv[]){
         perror("msgctl to get rid of queue in parent failed");
         exit(1);
     }
-    return 0;
+    
 
     //close the log file
     fclose(fileLogging);
+
+    return 0;
 }
