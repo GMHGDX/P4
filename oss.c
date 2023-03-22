@@ -25,6 +25,9 @@ typedef struct msgbuffer {
 
 int main(int argc, char *argv[]){
 
+    //My constant time quantum
+
+
     //default logfile name
     char* logFile = "logfile";
 
@@ -60,9 +63,6 @@ int main(int argc, char *argv[]){
 
     //Open the log file before input begins 
     fileLogging = fopen(logFile, "w+");
-
-    fprintf(fileLogging, "The name of your logfile: %s\n", logFile);
-    printf("The name of your logfile: %s\n", logFile);
     
     //beginning of sending and recieving messages 
     msgbuffer buf0;
@@ -86,7 +86,7 @@ int main(int argc, char *argv[]){
     printf("Message queue set up\n");
 
     // store pids of our first two children to launch
-    pid_t child[1];
+    pid_t child[0];
     int i = 0;
 
     // create our two children
