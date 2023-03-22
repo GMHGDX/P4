@@ -69,7 +69,7 @@ int main(int argc, char *argv[]){
     fileLogging = fopen(logFile, "w+");
     
     //beginning of sending and recieving messages 
-    msgbuffer buf0;
+    msgbuffer buf0, buf1;
     int msqid;
     key_t key;
 
