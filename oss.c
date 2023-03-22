@@ -161,7 +161,7 @@ int main(int argc, char *argv[]){
             wait(0);
         }
         
-        i++;
+        childNum++;
         printf("sleeping for a sec\n\n\n\n");
         sleep(maxSec);
         
