@@ -123,14 +123,22 @@ int main(int argc, char *argv[]){
         buf0.mtype = child[childNum];
         buf0.intData = child[childNum]; // we will give it the pid we are sending to, so we know it received it
         
-        char messageToChild[100];
-        int j;
-        for(j = 0; j < 100; j++){
-            snprintf(messageToChild, childNum, "Message to child %d", j);
+        // char messageToChild[7];
+        // int j;
+        // for(j = 0; j < 10; j++){
+        //     snprintf(buf, childNum, "buf%d", j);
+        // }
+
+        if (childNum == 0){
+        strcpy(buf0.strData,"Message to child 0\n");
+        }
+        if (childNum == 1){
+        strcpy(buf0.strData,"Message to child 1\n");
+        }
+        if (childNum == 1){
+        strcpy(buf0.strData,"Message to child 2\n");
         }
 
-        strcpy(buf0.strData, messageToChild);
-        
         //send message to worker process
         if (msgsnd(msqid, &buf0, sizeof(msgbuffer)-sizeof(long), 0) == -1) {
             perror("msgsnd to child 1 failed\n");
@@ -157,10 +165,10 @@ int main(int argc, char *argv[]){
         printf("sleeping for a sec\n\n\n\n");
         sleep(maxSec);
         
-        // if(i == 3){
-        //     printf("3 processes done, exiting loop");
-        //     break;
-        // }
+        if(childNum == 3){
+            printf("3 processes done, exiting loop");
+            break;
+        }
     }
 
     // get rid of message queue
