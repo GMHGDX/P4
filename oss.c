@@ -88,10 +88,9 @@ int main(int argc, char *argv[]){
     }
 
     printf("Message queue set up\n");
-
+int childNum = 0;
     while(1) {// store pids of our first two children to launch
         
-        int childNum = 0;
         pid_t child[childNum];
         
         int i = 0;
