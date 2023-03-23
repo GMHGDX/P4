@@ -117,6 +117,7 @@ int main(int argc, char *argv[]){
                 // fork error
                 perror("fork failed in parent");
             }
+            printf("created child %i with pid %d \n", childNum, child[childNum]);
         }
 
         // lets send a message only to child1, not child0
@@ -140,9 +141,9 @@ int main(int argc, char *argv[]){
             }
         }
         if (childNum == 1){
-            strcpy(buf0.strData,"Message to child 1\n");
+            strcpy(buf1.strData,"Message to child 1\n");
             //send message to worker process
-            if (msgsnd(msqid, &buf0, sizeof(msgbuffer)-sizeof(long), 0) == -1) {
+            if (msgsnd(msqid, &buf1, sizeof(msgbuffer)-sizeof(long), 0) == -1) {
                 perror("msgsnd to child 1 failed\n");
                 exit(1);
             }
