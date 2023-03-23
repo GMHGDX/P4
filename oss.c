@@ -129,22 +129,22 @@ int childNum = 0;
         // }
 
         if (childNum == 0){
-        strcpy(buf0.strData,"Message to child 0\n");
-        //send message to worker process
-        if (msgsnd(msqid, &buf0, sizeof(msgbuffer)-sizeof(long), 0) == -1) {
-            perror("msgsnd to child 1 failed\n");
-            exit(1);
-        }
-        }
-        if (childNum == 1){
-        strcpy(buf1.strData,"Message to child 1\n");
-        //send message to worker process
-        if (msgsnd(msqid, &buf1, sizeof(msgbuffer)-sizeof(long), 0) == -1) {
-            perror("msgsnd to child 1 failed\n");
-            exit(1);
-        }
+            strcpy(buf0.strData,"Message to child 0\n");
+            //send message to worker process
+            if (msgsnd(msqid, &buf0, sizeof(msgbuffer)-sizeof(long), 0) == -1) {
+                perror("msgsnd to child 1 failed\n");
+                exit(1);
+            }
         }
         if (childNum == 1){
+            strcpy(buf1.strData,"Message to child 1\n");
+            //send message to worker process
+            if (msgsnd(msqid, &buf1, sizeof(msgbuffer)-sizeof(long), 0) == -1) {
+                perror("msgsnd to child 1 failed\n");
+                exit(1);
+            }
+        }
+        if (childNum == 2){
         strcpy(buf0.strData,"Message to child 2\n");
         }
 
@@ -162,7 +162,7 @@ int childNum = 0;
         printf("Parent %d received message: %s my int data was %d\n",getpid(),rcvbuf.strData,rcvbuf.intData);
 
         // wait for children to end
-        for (i = 0; i < 2; i++) {
+        for (i = 0; i < 1; i++) {
             wait(0);
         }
         
