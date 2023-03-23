@@ -93,38 +93,38 @@ int main(int argc, char *argv[]){
 
     int k;
     for(k=0;k<5;k++){
-        child[k] = 0;
+        child[k] = 9;
         printf("Intialized %i to %d\n", k, child[k]);
     }
+    int i = 0;
+    pid_t pid;
+    msgbuffer rcvbuf;
 
     while(1) {// store pids of our first two children to launch
-        
-        
-        int i = 0;
         // create our child
-        for (i = 0; i < 1; i++) {
+        //for (i = 0; i < 1; i++) {
             // lets fork off a child
-            pid_t pid = fork();
+        pid = fork();
 
-            if (pid > 0) {
-                // save this child's pid
-                child[i] = pid;
-            }
-            else if (pid == 0) {
-                // in child, so lets exec off child executable
-                execlp("./worker","./worker",(char *)NULL);
-
-                // should never get here if exec worked
-                printf("Exec failed for first child\n");
-
-                exit(1);
-            }
-            else {
-                // fork error
-                perror("fork failed in parent");
-            }
-            printf("created child %i with pid %d \n", childNum, child[childNum]);
+        if (pid > 0) {
+            // save this child's pid
+            child[i] = pid;
         }
+        else if (pid == 0) {
+            // in child, so lets exec off child executable
+            execlp("./worker","./worker",(char *)NULL);
+
+            // should never get here if exec worked
+            printf("Exec failed for first child\n");
+
+            exit(1);
+        }
+        else {
+            // fork error
+            perror("fork failed in parent");
+        }
+        printf("created child %i with pid %d \n", childNum, child[childNum]);
+        //}
 
         // lets send a message only to child1, not child0
         buf0.mtype = child[childNum];
@@ -157,10 +157,6 @@ int main(int argc, char *argv[]){
 
         printf("finsihed sending message to child %i with pid %d \n", childNum, child[childNum]);
 
-
-        
-
-        msgbuffer rcvbuf;
 
         // Then let me read a message, but only one meant for me
         // ie: the one the child just is sending back to me
