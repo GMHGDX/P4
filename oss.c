@@ -89,10 +89,16 @@ int main(int argc, char *argv[]){
 
     printf("Message queue set up\n");
     int childNum = 0;
+    pid_t child[5];
+
+    int k;
+    for(k=0;k<5;k++){
+        child[k] = 0;
+        printf("Intialized %i to %d\n", k, child[k]);
+    }
 
     while(1) {// store pids of our first two children to launch
         
-        pid_t child[5];
         
         int i = 0;
         // create our child
@@ -141,9 +147,9 @@ int main(int argc, char *argv[]){
             }
         }
         if (childNum == 1){
-            strcpy(buf1.strData,"Message to child 1\n");
+            strcpy(buf0.strData,"Message to child 1\n");
             //send message to worker process
-            if (msgsnd(msqid, &buf1, sizeof(msgbuffer)-sizeof(long), 0) == -1) {
+            if (msgsnd(msqid, &buf0, sizeof(msgbuffer)-sizeof(long), 0) == -1) {
                 perror("msgsnd to child 1 failed\n");
                 exit(1);
             }
