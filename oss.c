@@ -6,7 +6,8 @@
 #include <getopt.h> //Needed for optarg function
 #include <stdlib.h> //EXIT_FAILURE
 #include <time.h> //to create system time
-#include "oss.h" //for PCB Table and BILLION
+#include "oss.h" //for PCB/Table
+#include <stdbool.h> //for booleans
 
 #include <string.h>
 #include <errno.h>
@@ -17,12 +18,25 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+
+#define BILLION 1000000000L //for nanoseconds
+
 #define PERMS 0644
+
+//message queue struct
 typedef struct msgbuffer {
     long mtype;
     char strData[100];
     int intData;
 } msgbuffer;
+
+//blocked and ready queue struct
+struct queue{
+    int processNum;
+    int position;
+};
+struct queue ready_queue[20];
+struct queue blocked_queue[20];
 
 int randomNumberGenerator(int limit){
     int sec;
@@ -83,7 +97,7 @@ int main(int argc, char *argv[]){
 
     //initialize the process table
     int j;
-    for(j=0;j<20;j++){
+    for(j = 0; j < 20; j++){
         processTable[j].total_CPU_time = (double)0;
         processTable[j].total_system_time = (double)0;
         processTable[j].sim_pid = -1;
@@ -93,14 +107,7 @@ int main(int argc, char *argv[]){
     }
 
     //initialize blocked and ready queue
-    struct queue{
-        int processNum;
-        int position;
-    };
-    struct queue ready_queue[20];
-    struct queue blocked_queue[20];
-    
-    for(j=0;j<20;j++){
+    for(j = 0; j < 20; j++){
         ready_queue[j].processNum = -1;
         ready_queue[j].position = 0;
         blocked_queue[j].processNum = -1;
@@ -131,10 +138,10 @@ int main(int argc, char *argv[]){
 
     printf("Message queue set up\n");
     int childNum = 0;
-    pid_t child[5];
+    pid_t child[18];
 
     int k;
-    for(k=0;k<5;k++){
+    for(k = 0; k < 18; k++){
         child[k] = 0;
         printf("Intialized %i to %d\n", k, child[k]);
     }
@@ -168,7 +175,7 @@ int main(int argc, char *argv[]){
 
 
         //todo: find process in ready queue, tell child the quantum, remove process from ready queue, check if process table is full, check if clock isnt passed time
-        if (a process is in the ready queue){
+        //if (a process is in the ready queue){
             pid = fork();
             if (pid > 0) {
                 // save this child's pid
@@ -213,7 +220,7 @@ int main(int argc, char *argv[]){
                 }
             }
             printf("finsihed sending message to child %i with pid %d \n", childNum, child[childNum]);
-        }
+        //}
 
 
         // Then let me read a message, but only one meant for me
