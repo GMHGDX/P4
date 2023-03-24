@@ -6,7 +6,7 @@
 #include <getopt.h> //Needed for optarg function
 #include <stdlib.h> //EXIT_FAILURE
 #include <time.h> //to create system time
-
+#include "oss.h" //for PCB Table and BILLION
 
 #include <string.h>
 #include <errno.h>
