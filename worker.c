@@ -15,6 +15,21 @@ typedef struct msgbuffer {
     int intData;
 } msgbuffer;
 
+int randomNumberGenerator(int limit){
+    int sec;
+    sec = (rand() % (limit)) + 1;
+    return sec;
+}
+
+
+//recieve quantum
+//weighted randomly decide if it will 
+        //use up all time (process goes back to ready queue)                                50%     (89%)
+        //use up part of the time and get intruppted (process goes back to blocked queue)   30%     (10%)
+        //use up part of the time and terimate (process finishes)                           20%     (1%)
+// send message back of waht it did
+// terminate this child
+
 int main(int argc, char *argv[]){
     msgbuffer buf;
     buf.mtype = 1;

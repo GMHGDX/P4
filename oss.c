@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <getopt.h> //Needed for optarg function
 #include <stdlib.h> //EXIT_FAILURE
+#include <time.h> //to create system time
 
 
 #include <string.h>
@@ -23,14 +24,29 @@ typedef struct msgbuffer {
     int intData;
 } msgbuffer;
 
+int randomNumberGenerator(int limit){
+    int sec;
+    sec = (rand() % (limit)) + 1;
+    return sec;
+}
+
 int main(int argc, char *argv[]){
 
     //My constant time quantum
-    //int q = 15200;
+    int const q = 15200;
 
     //max random time user processes will be created between each process
-    int maxSec = 1;
-    //int maxNano;
+    int const maxSec = 1;
+    int const maxNano = BILLION - 1;
+
+    //INtialize our clock
+    int clock_sec = 0;
+    int clock_nano = 0;
+
+
+    struct timespec start, stop, start_prog;
+    double sec;
+    double nano;
 
     //default logfile name
     char* logFile = "logfile";
@@ -65,11 +81,37 @@ int main(int argc, char *argv[]){
         }
     } 
 
+    //initialize the process table
+    int j;
+    for(j=0;j<20;j++){
+        processTable[j].total_CPU_time = (double)0;
+        processTable[j].total_system_time = (double)0;
+        processTable[j].sim_pid = -1;
+        processTable[j].processNum = -1;
+        processTable[j].pid = -1;
+        processTable[j].occupied = 0;
+    }
+
+    //initialize blocked and ready queue
+    struct queue{
+        int processNum;
+        int position;
+    };
+    struct queue ready_queue[20];
+    struct queue blocked_queue[20];
+    
+    for(j=0;j<20;j++){
+        ready_queue[j].processNum = -1;
+        ready_queue[j].position = 0;
+        blocked_queue[j].processNum = -1;
+        blocked_queue[j].position = 0;
+    }
+
     //Open the log file before input begins 
     fileLogging = fopen(logFile, "w+");
     
     //beginning of sending and recieving messages 
-    msgbuffer buf0, buf1;
+    msgbuffer buf0;
     int msqid;
     key_t key;
 
@@ -93,73 +135,90 @@ int main(int argc, char *argv[]){
 
     int k;
     for(k=0;k<5;k++){
-        child[k] = 9;
+        child[k] = 0;
         printf("Intialized %i to %d\n", k, child[k]);
     }
     int i = 0;
     pid_t pid;
     msgbuffer rcvbuf;
 
+
+    //start the program clock (used for checking if 3 real time secs have passed)
+    if( clock_gettime( CLOCK_REALTIME, &start_prog) == -1 ) {
+      perror( "clock gettime" );
+      return EXIT_FAILURE;
+    }
+
+    double newProcsSec = randomNumberGenerator(maxSec) + start_prog.tv_sec;
+    double newProcsNS = randomNumberGenerator(maxNano) + start_prog.tv_nsec;
+
+    bool past3s = false;
+
     while(1) {// store pids of our first two children to launch
-        // create our child
-        //for (i = 0; i < 1; i++) {
-            // lets fork off a child
-        pid = fork();
 
-        if (pid > 0) {
-            // save this child's pid
-            child[i] = pid;
+        if(clock_gettime( CLOCK_REALTIME, &stop) == -1 ) {
+        perror( "clock gettime" );
+        return EXIT_FAILURE;
+        } 
+        if(stop.tv_sec - start_prog.tv_sec >= 4){
+            past3s = true;
         }
-        else if (pid == 0) {
-            // in child, so lets exec off child executable
-            execlp("./worker","./worker",(char *)NULL);
 
-            // should never get here if exec worked
-            printf("Exec failed for first child\n");
+        //check if enough time has passed to create a new process
 
-            exit(1);
-        }
-        else {
-            // fork error
-            perror("fork failed in parent");
-        }
-        printf("created child %i with pid %d \n", childNum, child[childNum]);
-        //}
 
-        // lets send a message only to child1, not child0
-        buf0.mtype = child[childNum];
-        buf0.intData = child[childNum]; // we will give it the pid we are sending to, so we know it received it
-        
-        // char messageToChild[7];
-        // int j;
-        // for(j = 0; j < 10; j++){
-        //     snprintf(buf, childNum, "buf%d", j);
-        // }
+        //todo: find process in ready queue, tell child the quantum, remove process from ready queue, check if process table is full, check if clock isnt passed time
+        if (a process is in the ready queue){
+            pid = fork();
+            if (pid > 0) {
+                // save this child's pid
+                child[i] = pid;
+                childNum++;
+            }
+            else if (pid == 0) {
+                // in child, so lets exec off child executable
+                execlp("./worker","./worker",(char *)NULL);
 
-        printf("Sending message to child %i with pid %d \n", childNum, child[childNum]);
+                // should never get here if exec worked
+                printf("Exec failed for first child\n");
 
-        if (childNum == 0){
-            strcpy(buf0.strData,"Message to child 0\n");
-            //send message to worker process
-            if (msgsnd(msqid, &buf0, sizeof(msgbuffer)-sizeof(long), 0) == -1) {
-                perror("msgsnd to child 1 failed\n");
                 exit(1);
             }
-        }
-        if (childNum == 1){
-            strcpy(buf0.strData,"Message to child 1\n");
-            //send message to worker process
-            if (msgsnd(msqid, &buf0, sizeof(msgbuffer)-sizeof(long), 0) == -1) {
-                perror("msgsnd to child 1 failed\n");
-                exit(1);
+            else {
+                // fork error
+                perror("fork failed in parent");
             }
-        }
+            printf("created child %i with pid %d \n", childNum, child[childNum]);
 
-        printf("finsihed sending message to child %i with pid %d \n", childNum, child[childNum]);
+            // lets send a message only to child1, not child0
+            buf0.mtype = child[childNum];
+            buf0.intData = child[childNum]; // we will give it the pid we are sending to, so we know it received it
+
+            printf("Sending message to child %i with pid %d \n", childNum, child[childNum]);
+
+            if (childNum == 0){
+                strcpy(buf0.strData,"Message to child 0\n");
+                //send message to worker process
+                if (msgsnd(msqid, &buf0, sizeof(msgbuffer)-sizeof(long), 0) == -1) {
+                    perror("msgsnd to child 1 failed\n");
+                    exit(1);
+                }
+            }
+            if (childNum == 1){
+                strcpy(buf0.strData,"Message to child 1\n");
+                //send message to worker process
+                if (msgsnd(msqid, &buf0, sizeof(msgbuffer)-sizeof(long), 0) == -1) {
+                    perror("msgsnd to child 1 failed\n");
+                    exit(1);
+                }
+            }
+            printf("finsihed sending message to child %i with pid %d \n", childNum, child[childNum]);
+        }
 
 
         // Then let me read a message, but only one meant for me
         // ie: the one the child just is sending back to me
+        //Check if child goes back to ready, blocked or if terminated
         if (msgrcv(msqid, &rcvbuf,sizeof(msgbuffer), getpid(),0) == -1) {
             perror("failed to receive message in parent\n");
             exit(1);
@@ -167,20 +226,26 @@ int main(int argc, char *argv[]){
 
         printf("Parent %d received message: %s my int data was %d\n",getpid(),rcvbuf.strData,rcvbuf.intData);
 
-        // wait for children to end
-        for (i = 0; i < 1; i++) {
-            wait(0);
-        }
         
-        childNum++;
-        printf("sleeping for a sec\n\n\n\n");
-        sleep(maxSec);
-        
-        if(childNum == 3){
-            printf("3 processes done, exiting loop");
-            break;
+
+
+        if(all process table is compelted, and requdy quee and blocked queue is empty){
+            //break out of loop, end program
         }
+
+
+        //childNum++;
+        // printf("sleeping for a sec\n\n\n\n");
+        // sleep(maxSec);
+        
+        // if(childNum == 3){
+        //     printf("3 processes done, exiting loop");
+        //     break;
+        // }
     }
+
+    //wait(0); //wait for all processes to complete then exit. should check for process tbale to empty actually so make sure you reveieve messages
+
 
     // get rid of message queue
     if (msgctl(msqid, IPC_RMID, NULL) == -1) {
