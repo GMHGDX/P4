@@ -236,19 +236,14 @@ int main(int argc, char *argv[]){
         
 
 
-        if(all process table is compelted, and requdy quee and blocked queue is empty){
+        //if(all process table is compelted, and requdy quee and blocked queue is empty){
             //break out of loop, end program
-        }
+        //}
 
 
-        //childNum++;
-        // printf("sleeping for a sec\n\n\n\n");
-        // sleep(maxSec);
-        
-        // if(childNum == 3){
-        //     printf("3 processes done, exiting loop");
-        //     break;
-        // }
+        childNum++;
+        printf("sleeping for a sec\n\n\n\n");
+        sleep(maxSec);
     }
 
     //wait(0); //wait for all processes to complete then exit. should check for process tbale to empty actually so make sure you reveieve messages
