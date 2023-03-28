@@ -188,6 +188,8 @@ int main(int argc, char *argv[]){
 
 
 
+
+
     //Create shared memory, key
     const int sh_key = 3147550;
 
