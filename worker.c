@@ -15,10 +15,15 @@ typedef struct msgbuffer {
     int intData;
 } msgbuffer;
 
-int randomNumberGenerator(int limit){
-    int sec;
-    sec = (rand() % (limit)) + 1;
-    return sec;
+int randomNumberProcess(void){
+    int r = rand();
+
+    if (r < RAND_MAX / 8) {
+        return -(r % 101);
+    } else {
+        return +(r % 101);
+    }
+
 }
 
 

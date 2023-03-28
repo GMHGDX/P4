@@ -35,8 +35,58 @@ struct queue{
     int processNum;
     int position;
 };
-struct queue ready_queue[20];
-struct queue blocked_queue[20];
+struct queue* ready_queue;
+struct queue* blocked_queue;
+
+
+struct queue getItem(struct queue* my_queue){
+    int i;
+    int lowest_position = 999;
+    int lowest_position_num = -1;
+    for(i=0;i<=20;i++){
+        if(my_queue[i]->position < lowest_position){
+            lowest_position = my_queue[i]->position
+            lowest_position_num = i;
+        }
+    }
+    struct queue return_block = my_queue[lowest_position_num];
+    my_queue[lowest_position_num]->position = 999;
+    my_queue[lowest_position_num]->processNum = -1;
+
+    return return_block;
+}
+
+struct queue* setItem(struct queue* my_queue, int processNum){
+    int i;
+    int highest_position = -1;
+    int highest_position_num = -1;
+    for(i=0;i<=20;i++){
+        if(my_queue[i]->position > highest_position){
+            highest_position = my_queue[i]->position
+            highest_position_num = i;
+        }
+    }
+    if(highest_position == -1){
+        highest_position_num = 0;
+    }
+    struct queue set_block;
+    set_block->position = highest_position+1;
+    set_block->processNum = processNum;
+
+
+    bool worked = false;
+    for(i=0;i<=20;i++){
+        if(my_queue[i]->processNum == -1){
+            my_queue[i] = set_block;
+            worked = true;
+        }
+    }
+
+    if(!worked){
+		printf("\n ERROR, all positions in this queue are full!!!\n");
+    }
+}
+
 
 int randomNumberGenerator(int limit){
     int sec;
@@ -53,7 +103,7 @@ int main(int argc, char *argv[]){
     int const maxSec = 1;
     int const maxNano = BILLION - 1;
 
-    //INtialize our clock
+    //Initialize our clock
     int clock_sec = 0;
     int clock_nano = 0;
 
@@ -61,6 +111,9 @@ int main(int argc, char *argv[]){
     struct timespec start, stop, start_prog;
     double sec;
     double nano;
+
+    //For ready and blocked queue
+    int queue;
 
     //default logfile name
     char* logFile = "logfile";
@@ -107,11 +160,63 @@ int main(int argc, char *argv[]){
     }
 
     //initialize blocked and ready queue
+    ready_queue = (struct queue *) malloc(sizeof(struct queue) * 20);
+    blocked_queue = (struct queue *) malloc(sizeof(struct queue) * 20);
     for(j = 0; j < 20; j++){
-        ready_queue[j].processNum = -1;
-        ready_queue[j].position = 0;
-        blocked_queue[j].processNum = -1;
-        blocked_queue[j].position = 0;
+        ready_queue[j]->processNum = -1;
+        ready_queue[j]->position = -1;
+        blocked_queue[j]->processNum = -1;
+        blocked_queue[j]->position = -1;
+    }
+
+    for(j = 0; j < 20; j++){
+        printf("In ready queue # %i, is positoin %i, processnum %i \n", j, ready_queue[j].position, ready_queue[j].processNum);
+    }
+    struct queue grabber = getItem(ready_queue);
+    printf("highest priority is stored %i, with processnum %i", grabber.position, grabber.processNum);
+
+    setItem(69);
+    grabber = getItem(ready_queue);
+    printf("highest priority after putting in 69 is %i, with processnum %i", grabber.position, grabber.processNum);
+
+    setItem(69);
+    setItem(70);
+    grabber = getItem(ready_queue);
+    printf("highest priority after putting in 69 and 70 is %i, with processnum %i", grabber.position, grabber.processNum);
+
+
+
+
+
+    //Create shared memory, key
+    const int sh_key = 3147550;
+
+    //Create key using ftok() for more uniqueness
+    key_t msqkey;
+    if((msqkey = ftok("oss.h", 'a')) == (key_t) -1){
+        perror("IPC error: ftok");
+        exit(1);
+    }
+
+    //open an existing message queue or create a new one
+    int msqid;
+    if ((msqid = msgget(msqkey, PERMS | IPC_CREAT)) == -1) {
+      perror("Failed to create new private message queue");
+      exit(1);
+   }
+
+    //create shared memory
+    int shm_id = shmget(sh_key, sizeof(struct PCB), IPC_CREAT | 0666);
+    if(shm_id <= 0) {
+        fprintf(stderr,"ERROR: Failed to get shared memory, shared memory id = %i\n", shm_id);
+        exit(1);
+    }
+
+    //attatch memory we allocated to our process and point pointer to it 
+    struct PCB *shm_ptr = (struct PCB*) (shmat(shm_id, NULL, 0));
+    if (shm_ptr <= 0) {
+        fprintf(stderr,"Shared memory attach failed\n");
+        exit(1);
     }
 
     //Open the log file before input begins 
@@ -138,10 +243,10 @@ int main(int argc, char *argv[]){
 
     printf("Message queue set up\n");
     int childNum = 0;
-    pid_t child[18];
+    pid_t child[15];
 
     int k;
-    for(k = 0; k < 18; k++){
+    for(k = 0; k < 15; k++){
         child[k] = 0;
         printf("Intialized %i to %d\n", k, child[k]);
     }
@@ -159,15 +264,34 @@ int main(int argc, char *argv[]){
     double newProcsSec = randomNumberGenerator(maxSec) + start_prog.tv_sec;
     double newProcsNS = randomNumberGenerator(maxNano) + start_prog.tv_nsec;
 
+    printf("random number - seconds: %i", newProcsSec);
+    printf("\trandom number - Nano: %i\n", newProcsNS);
+    
+    //to break when program has reached 3 real seconds
     bool past3s = false;
 
     while(1) {// store pids of our first two children to launch
+
+    //ALL OUTPUT
+    //OSS: Generating process with PID 3 and putting it in queue 0 at time 0:5000015
+    //OSS: Dispatching process with PID 3 from queue 0 at time 0:5000805,
+    //OSS: total time this dispatch was 790 nanoseconds,
+    //OSS: Receiving that process with PID 3 ran for 270000 nanoseconds,
+    //OSS: **WHAT DID IT CHOOSE IN WORKER**(not using its entire time quantum, used it's entire time quamtum, terminatedetc.)
+    //OSS: **WHAT QUEUE DOES IT GO IN AFTER CHOOSING**(Putting process with PID 3 into blocked queue 'OR' Putting process with PID 3 into ready queue)
 
         if(clock_gettime( CLOCK_REALTIME, &stop) == -1 ) {
         perror( "clock gettime" );
         return EXIT_FAILURE;
         } 
-        if(stop.tv_sec - start_prog.tv_sec >= 4){
+
+        sec = (stop.tv_sec - start.tv_sec); 
+        nano = (double)( stop.tv_nsec - start.tv_nsec);
+
+        printf("The stop time: %i", sec);
+        printf("\tThe stop time: %i\n", nano);
+
+        if(stop.tv_sec - start_prog.tv_sec >= 3){
             past3s = true;
         }
 
@@ -230,6 +354,9 @@ int main(int argc, char *argv[]){
             perror("failed to receive message in parent\n");
             exit(1);
         }
+
+        printf("OSS: Dispatching process with PID %d from queue %i at time %i:%ld,", child[childNum], queue, sec, nano);
+        printf("OSS: total time this dispatch was %ld nanoseconds", nano);
 
         printf("Parent %d received message: %s my int data was %d\n",getpid(),rcvbuf.strData,rcvbuf.intData);
 
