@@ -183,7 +183,7 @@ int main(int argc, char *argv[]){
     for(j = 0; j < 20; j++){
         printf("In ready queue # %i, is positoin %i, processnum %i \n", j, ready_queue[j].position, ready_queue[j].processNum);
     }
-    printf("\n\n")
+    printf("\n\n");
     grabber = getItem(ready_queue);
     printf("highest priority after putting in 69 is %i, with processnum %i\n", grabber.position, grabber.processNum);
 
@@ -194,7 +194,7 @@ int main(int argc, char *argv[]){
 
 
 
-
+    return 0;
 
 
 
