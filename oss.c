@@ -44,14 +44,14 @@ struct queue getItem(struct queue* my_queue){
     int lowest_position = 999;
     int lowest_position_num = -1;
     for(i=0;i<=20;i++){
-        if(my_queue[i]->position < lowest_position){
-            lowest_position = my_queue[i]->position
+        if(my_queue[i].position < lowest_position){
+            lowest_position = my_queue[i].position;
             lowest_position_num = i;
         }
     }
     struct queue return_block = my_queue[lowest_position_num];
-    my_queue[lowest_position_num]->position = 999;
-    my_queue[lowest_position_num]->processNum = -1;
+    my_queue[lowest_position_num].position = 999;
+    my_queue[lowest_position_num].processNum = -1;
 
     return return_block;
 }
@@ -61,8 +61,8 @@ struct queue* setItem(struct queue* my_queue, int processNum){
     int highest_position = -1;
     int highest_position_num = -1;
     for(i=0;i<=20;i++){
-        if(my_queue[i]->position > highest_position){
-            highest_position = my_queue[i]->position
+        if(my_queue[i].position > highest_position){
+            highest_position = my_queue[i].position;
             highest_position_num = i;
         }
     }
@@ -70,13 +70,13 @@ struct queue* setItem(struct queue* my_queue, int processNum){
         highest_position_num = 0;
     }
     struct queue set_block;
-    set_block->position = highest_position+1;
-    set_block->processNum = processNum;
+    set_block.position = highest_position+1;
+    set_block.processNum = processNum;
 
 
     bool worked = false;
     for(i=0;i<=20;i++){
-        if(my_queue[i]->processNum == -1){
+        if(my_queue[i].processNum == -1){
             my_queue[i] = set_block;
             worked = true;
         }
@@ -163,10 +163,10 @@ int main(int argc, char *argv[]){
     ready_queue = (struct queue *) malloc(sizeof(struct queue) * 20);
     blocked_queue = (struct queue *) malloc(sizeof(struct queue) * 20);
     for(j = 0; j < 20; j++){
-        ready_queue[j]->processNum = -1;
-        ready_queue[j]->position = -1;
-        blocked_queue[j]->processNum = -1;
-        blocked_queue[j]->position = -1;
+        ready_queue[j].processNum = -1;
+        ready_queue[j].position = -1;
+        blocked_queue[j].processNum = -1;
+        blocked_queue[j].position = -1;
     }
 
     for(j = 0; j < 20; j++){
@@ -175,12 +175,12 @@ int main(int argc, char *argv[]){
     struct queue grabber = getItem(ready_queue);
     printf("highest priority is stored %i, with processnum %i", grabber.position, grabber.processNum);
 
-    setItem(69);
+    setItem(ready_queue, 69);
     grabber = getItem(ready_queue);
     printf("highest priority after putting in 69 is %i, with processnum %i", grabber.position, grabber.processNum);
 
-    setItem(69);
-    setItem(70);
+    setItem(ready_queue, 69);
+    setItem(ready_queue, 70);
     grabber = getItem(ready_queue);
     printf("highest priority after putting in 69 and 70 is %i, with processnum %i", grabber.position, grabber.processNum);
 
