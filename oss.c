@@ -226,7 +226,6 @@ int main(int argc, char *argv[]){
     
     //beginning of sending and recieving messages 
     msgbuffer buf0;
-    int msqid;
     key_t key;
 
     system("touch oss.c");
