@@ -50,7 +50,7 @@ struct queue getItem(struct queue* my_queue){
         }
     }
     struct queue return_block = my_queue[lowest_position_num];
-    my_queue[lowest_position_num].position = 999;
+    my_queue[lowest_position_num].position = -1;
     my_queue[lowest_position_num].processNum = -1;
 
     return return_block;
@@ -64,6 +64,7 @@ struct queue* setItem(struct queue* my_queue, int processNum){
         if(my_queue[i].position > highest_position){
             highest_position = my_queue[i].position;
             highest_position_num = i;
+            printf("found a higher position %i, with num %i \n", highest_position, highest_position_num);
         }
     }
     if(highest_position == -1){
