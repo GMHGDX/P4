@@ -43,7 +43,7 @@ struct queue getItem(struct queue* my_queue){
     int i;
     int lowest_position = 999;
     int lowest_position_num = -1;
-    for(i=0;i<=20;i++){
+    for(i=0;i<20;i++){
         if(my_queue[i].position < lowest_position){
             lowest_position = my_queue[i].position;
             lowest_position_num = i;
@@ -60,7 +60,7 @@ struct queue* setItem(struct queue* my_queue, int processNum){
     int i;
     int highest_position = -1;
     int highest_position_num = -1;
-    for(i=0;i<=20;i++){
+    for(i=0;i<20;i++){
         if(my_queue[i].position > highest_position){
             highest_position = my_queue[i].position;
             highest_position_num = i;
@@ -76,7 +76,7 @@ struct queue* setItem(struct queue* my_queue, int processNum){
 
 
     bool worked = false;
-    for(i=0;i<=20;i++){
+    for(i=0;i<20;i++){
         if(my_queue[i].processNum == -1){
             my_queue[i] = set_block;
             worked = true;
