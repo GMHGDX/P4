@@ -44,7 +44,7 @@ struct queue getItem(struct queue* my_queue){
     int lowest_position = 999;
     int lowest_position_num = -1;
     for(i=0;i<20;i++){
-        if(my_queue[i].position < lowest_position){
+        if(my_queue[i].position < lowest_position && my_queue[i].position != -1){
             lowest_position = my_queue[i].position;
             lowest_position_num = i;
         }
