@@ -6,17 +6,18 @@
 #include <getopt.h> //Needed for optarg function
 #include <stdlib.h> //EXIT_FAILURE
 #include <time.h> //to create system time
-#include "oss.h" //for PCB/Table
-#include <stdbool.h> //for booleans
+#include <stdbool.h> //for boolean values
+#include <sys/shm.h> //Shared memory
+#include <sys/msg.h> //message queues
+#include <string.h> //remedy exit() warning
+#include <sys/wait.h> //wait for child
+#include <unistd.h> //for pid_t and exec
 
-#include <string.h>
 #include <errno.h>
-#include <string.h>
 #include <sys/types.h>
 #include <sys/ipc.h>
-#include <sys/msg.h>
-#include <sys/wait.h>
-#include <unistd.h>
+
+#include "oss.h" //for PCB/Table
 
 
 #define BILLION 1000000000L //for nanoseconds
@@ -51,7 +52,7 @@ struct queue getItem(struct queue* my_queue){
     }
 
     if(lowest_position_num == -1){
-        prinf("ERROR: nothting is in queue\n")
+        printf("ERROR: nothting is in queue\n");
         exit(1);
     }
     struct queue return_block = my_queue[lowest_position_num];
