@@ -15,15 +15,22 @@ typedef struct msgbuffer {
     int intData;
 } msgbuffer;
 
-int randomNumberProcess(void){
-    int r = rand();
+// int randomNumberProcess(void){
+//     int r = rand();
 
-    if (r < RAND_MAX / 8) {
-        return -(r % 101);
-    } else {
-        return +(r % 101);
-    }
+//     if (r < RAND_MAX / 8) {
+//         return -(r % 101);
+//     } else {
+//         return +(r % 101);
+//     }
 
+// }
+
+    //returns number between 1-limit
+int randomNumberGenerator(int limit){
+    int sec;
+    sec = (rand() % (limit)) + 1;
+    return sec;
 }
 
 
@@ -62,11 +69,32 @@ int main(int argc, char *argv[]){
     }
 
     // output message from parent
-    printf("Child %d received message: %s was my messageand my int data was %d\n",getpid(),buf.strData, buf.intData);
+    printf("Child %d received message: %s was my message and my int data was %d\n",getpid(), buf.strData, buf.intData);
+    int quantum = buf.intData;
+    int random_event = randomNumberGenerator(100);
+    int message_back;
+
+    if (random_event < 50){
+        //use up all time
+        message_back = quantum;
+
+    }else if (random_event < 80 && random_event >= 50){
+        //use up aprt tim, get blocked (lol)
+        message_back = randomNumberGenerator(quantum-1);    //returns 1 - (quantum-1)
+    }
+    else if (random_event >= 80){
+       //use up part time terinate (also lol)
+       message_back = -randomNumberGenerator(quantum-1);    //reutns a negative
+    }
+    
+
+
+
+
 
     // now send a message back to our parent
     buf.mtype = getppid();
-    buf.intData = getppid();
+    buf.intData = message_back;
 
     strcpy(buf.strData,"Message back to muh parent\n");
 

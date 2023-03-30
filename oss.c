@@ -49,6 +49,11 @@ struct queue getItem(struct queue* my_queue){
             lowest_position_num = i;
         }
     }
+
+    if(lowest_position_num == -1){
+        prinf("ERROR: nothting is in queue\n")
+        exit(1);
+    }
     struct queue return_block = my_queue[lowest_position_num];
     my_queue[lowest_position_num].position = -1;
     my_queue[lowest_position_num].processNum = -1;
@@ -85,7 +90,8 @@ struct queue* setItem(struct queue* my_queue, int processNum){
     }
 
     if(!worked){
-		printf("\n ERROR, all positions in this queue are full!!!\n");
+		printf("\n ERROR: all positions in this queue are full!!!\n");
+        exit(1);
     }
 }
 
@@ -109,7 +115,7 @@ int main(int argc, char *argv[]){
     int clock_sec = 0;
     int clock_nano = 0;
 
-
+    //for creating a simulated clock that uses close to real time
     struct timespec start, stop, start_prog;
     double sec;
     double nano;
@@ -177,7 +183,6 @@ int main(int argc, char *argv[]){
     struct queue grabber = getItem(ready_queue);
     printf("highest priority is stored %i, with processnum %i \n", grabber.position, grabber.processNum);
 
-
     printf("Settng first item\n");
     setItem(ready_queue, 69);
 
@@ -193,11 +198,7 @@ int main(int argc, char *argv[]){
     grabber = getItem(ready_queue);
     printf("highest priority after putting in 69 and 70 is %i, with processnum %i\n", grabber.position, grabber.processNum);
 
-
-
     return 0;
-
-
 
     //Create shared memory, key
     const int sh_key = 3147550;
@@ -306,6 +307,7 @@ int main(int argc, char *argv[]){
         }
 
         //check if enough time has passed to create a new process
+
 
 
         //todo: find process in ready queue, tell child the quantum, remove process from ready queue, check if process table is full, check if clock isnt passed time
