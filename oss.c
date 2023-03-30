@@ -196,6 +196,11 @@ int main(int argc, char *argv[]){
 
     setItem(ready_queue, 69);
     setItem(ready_queue, 70);
+
+    for(j = 0; j < 20; j++){
+        printf("In ready queue # %i, is positoin %i, processnum %i \n", j, ready_queue[j].position, ready_queue[j].processNum);
+    }
+    printf("\n\n");
     grabber = getItem(ready_queue);
     printf("highest priority after putting in 69 and 70 is %i, with processnum %i\n", grabber.position, grabber.processNum);
 
