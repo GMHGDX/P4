@@ -53,7 +53,7 @@ struct queue getItem(struct queue* my_queue){
 
     if(lowest_position_num == -1){
         printf("ERROR: nothting is in queue\n");
-        exit(1);
+        //exit(1);
     }
     struct queue return_block = my_queue[lowest_position_num];
     my_queue[lowest_position_num].position = -1;
