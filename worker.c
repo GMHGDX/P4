@@ -65,7 +65,7 @@ int main(int argc, char *argv[]){
     printf("Child %d received message: %s was my message and my int data was %d\n",getpid(), buf.strData, buf.intData);
 
     //initialization for the childs random, weighted, choosing period
-    int quantum = atoi(buf.strData); //converts quantum message string to an integer
+    int quantum = atoi(rcvbuf.strData); //converts quantum message string to an integer
     int random_event = randomNumberGenerator(100);
     int message_back;
     char usedQ[10];
