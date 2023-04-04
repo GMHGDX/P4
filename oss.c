@@ -372,20 +372,36 @@ int main(int argc, char *argv[]){
 
         int recievedFromWorker = atoi(rcvbuf.strData); //converts message string from worker to an integer
 
+        //used all time, put in ready queue
         if(recievedFromWorker == quantum){
-            //used all time, put in ready queue
             printf("used all time, put in ready queue!\n");
+
+            //puts current process back in ready queue
+            setItem(ready_queue, procNum);
+
+            for(j = 0; j < 20; j++){
+            printf("In ready queue # %i, is positoin %i, processnum %i \n", j, ready_queue[j].position, ready_queue[j].processNum);
+            }
+            printf("\n\n");
         }
+        //used up part of the time, blocked queue
         else if(recievedFromWorker < quantum && recievedFromWorker > 0){
-            //used up part of the time, blocked queue
             printf("used up part of the time, put in blocked queue!\n");
+
+            //puts current process in blocked queue
+            setItem(blocked_queue, procNum);
+
+            for(j = 0; j < 20; j++){
+                printf("In blocked queue # %i, is positoin %i, processnum %i \n", j, blocked_queue[j].position, blocked_queue[j].processNum);
+            }
+            printf("\n\n");
         }
         else if(recievedFromWorker < 0){
             //terminate
-            printf("terminating!\n");
+            printf("terminating!\n"); //process stays removed from ready queue
         }
         else{
-            //This should never print
+            //This should never print, but just in case
             printf("ERROR: Worker returned a number that doesnt match any option. Number returned-> %i", recievedFromWorker);
         }
 
@@ -396,6 +412,7 @@ int main(int argc, char *argv[]){
         //}
         
         childNum++; //increment child for new message
+        procNum++; //set next process
         printf("sleeping for a sec\n\n\n\n");
         sleep(maxSec);
         if(childNum == 1){
