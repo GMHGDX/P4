@@ -372,15 +372,15 @@ int main(int argc, char *argv[]){
 
         if(recievedFromWorker == quantum){
             //used all time, put in ready queue
-            printf("used all time, put in ready queue!");
+            printf("used all time, put in ready queue!\n");
         }
         else if(recievedFromWorker < quantum && recievedFromWorker > 0){
             //used up part of the time, blocked queue
-            printf("used up part of the time, put in blocked queue!");
+            printf("used up part of the time, put in blocked queue!\n");
         }
         else if(recievedFromWorker < 0){
             //terminate
-            printf("terminating!");
+            printf("terminating!\n");
         }
         else{
             //This should never print
