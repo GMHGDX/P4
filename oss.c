@@ -100,7 +100,7 @@ void setItem(struct queue* my_queue, int processNum, double total_CPU_time, doub
 }
 
 bool isQueueEmpty(struct queue*);
-bool isSomthingRunning(struct PCB);
+bool isSomthingRunning();
 
 int randomNumberGenerator(int limit){
     int sec;
@@ -429,8 +429,8 @@ int main(int argc, char *argv[]){
 
         printTable(fileLogging);
 
-        printf("is ready queue empty: %d, is blocked queue mepty: %d, NOT is something running in processtable: %d, is time passed 3s : %d", isQueueEmpty(ready_queue), isQueueEmpty(blocked_queue), !isSomthingRunning(processTable), current_time > 3 );
-        if(isQueueEmpty(ready_queue) && isQueueEmpty(blocked_queue) && !isSomthingRunning(processTable) && current_time > 3){  //If all processes have finished work and have terminated, exit program
+        printf("is ready queue empty: %d, is blocked queue mepty: %d, NOT is something running in processtable: %d, is time passed 3s : %d", isQueueEmpty(ready_queue), isQueueEmpty(blocked_queue), !isSomthingRunning(), current_time > 3 );
+        if(isQueueEmpty(ready_queue) && isQueueEmpty(blocked_queue) && !isSomthingRunning() && current_time > 3){  //If all processes have finished work and have terminated, exit program
             break;
         }
     }
@@ -451,6 +451,7 @@ int main(int argc, char *argv[]){
 }
 
 bool isQueueEmpty(struct queue* myQueue){
+    int j;
     for(j = 0; j < 20; j++){
         if(myQueue[j].processNum != -1){
             return false;
@@ -459,7 +460,8 @@ bool isQueueEmpty(struct queue* myQueue){
     return true;
 }
 
-bool isSomthingRunning(struct PCB){
+bool isSomthingRunning(){
+    int i;
     for(i=0;i<18;i++){
         if(processTable[i].occupied == 1 ){
             return true;
