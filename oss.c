@@ -122,7 +122,7 @@ int main(int argc, char *argv[]){
     int clock_nano = 0;
 
     //for creating a simulated clock 
-    struct timespec start, stop, start_process;
+    struct timespec start, stop, checktime;
     double sec;
     double nano;
     double termTime;
@@ -320,11 +320,12 @@ int main(int argc, char *argv[]){
             if (pid > 0) {
                 // save this child's pid for sending message
                 child[childNum] = pid;
-                if( clock_gettime( CLOCK_REALTIME, &start_process) == -1 ) {
+                if( clock_gettime( CLOCK_REALTIME, &stop) == -1 ) {
                     perror( "clock gettime" );
                     return EXIT_FAILURE;
                 }
-                printf("Start time for process is: %f and nano %f", start_process.tv_sec, start_process.tv_nsec);
+                printf("Start time for process is: %f and nano %f", stop.tv_sec, stop.tv_nsec);
+                checktime = stop;
             }
             else if (pid == 0){
                 // in child, so lets exec off child executable
@@ -420,6 +421,11 @@ int main(int argc, char *argv[]){
 
             printf("The stop time: %f\n", termTime);        
             processTable[childrenToLaunch].total_system_time = termTime;
+            
+
+            termTime = (double)(stop.tv_sec - checktime.tv_sec) + ((double)( stop.tv_nsec - checktime.tv_nsec))/BILLION; 
+
+            printf("Check time says the process stopped after: %f\n", termTime);
         }
         else{
             //This should never print, but just in case
