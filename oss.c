@@ -60,7 +60,7 @@ int getItem(struct queue* my_queue){
     return return_block.processNum;
 }
 
-struct queue* setItem(struct queue* my_queue, int processNum){
+void setItem(struct queue* my_queue, int processNum){
     int i;
     int highest_position = -1;
     int highest_position_num = -1;
