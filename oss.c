@@ -368,7 +368,7 @@ int main(int argc, char *argv[]){
             perror("failed to receive message in parent\n");
             exit(1);
         }
-        int recievedFromWorker = atoi(rcvbuf.strData); //converts message string from worker to an integer
+        int recievedFromWorker = atoi(buf.strData); //converts message string from worker to an integer
 
         if(recievedFromWorker == quantum){
             //used all time, put in ready queue
