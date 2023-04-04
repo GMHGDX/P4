@@ -3,6 +3,7 @@
 // Date: 3/19/2023
 
 #include <stdio.h>
+#include <sys/types.h>
 #include <getopt.h> //Needed for optarg function
 #include <stdlib.h> //EXIT_FAILURE
 #include <time.h> //to create system time
@@ -14,14 +15,11 @@
 #include <unistd.h> //for pid_t and exec
 
 #include <errno.h>
-#include <sys/types.h>
 #include <sys/ipc.h>
 
 #include "oss.h" //for PCB/Table
 
-
 #define BILLION 1000000000L //for nanoseconds
-
 #define PERMS 0644
 
 //message queue struct
@@ -80,7 +78,6 @@ struct queue* setItem(struct queue* my_queue, int processNum){
     set_block.position = highest_position+1;
     set_block.processNum = processNum;
 
-
     bool worked = false;
     for(i=0;i<20;i++){
         if(my_queue[i].processNum == -1){
@@ -96,7 +93,6 @@ struct queue* setItem(struct queue* my_queue, int processNum){
     }
 }
 
-
 int randomNumberGenerator(int limit){
     int sec;
     sec = (rand() % (limit)) + 1;
@@ -106,7 +102,10 @@ int randomNumberGenerator(int limit){
 int main(int argc, char *argv[]){
 
     //My constant time quantum
-    int const q = 15200;
+    int const quantum = 15200;
+
+    char quantumForPID[10];                                //initialize char for conversion
+    snprintf(quantumForPID, sizeof(quantumForPID), "%i", quantum); //convert quantum int to string
 
     //max random time user processes will be created between each process
     int const maxSec = 1;
@@ -116,13 +115,10 @@ int main(int argc, char *argv[]){
     int clock_sec = 0;
     int clock_nano = 0;
 
-    //for creating a simulated clock that uses close to real time
+    //for creating a simulated clock 
     struct timespec start, stop, start_prog;
     double sec;
     double nano;
-
-    //For ready and blocked queue
-    int queue;
 
     //default logfile name
     char* logFile = "logfile";
@@ -178,33 +174,33 @@ int main(int argc, char *argv[]){
         blocked_queue[j].position = -1;
     }
 
-    for(j = 0; j < 20; j++){
-        printf("In ready queue # %i, is positoin %i, processnum %i \n", j, ready_queue[j].position, ready_queue[j].processNum);
-    }
-    struct queue grabber = getItem(ready_queue);
-    printf("highest priority is stored %i, with processnum %i \n", grabber.position, grabber.processNum);
+    // for(j = 0; j < 20; j++){
+    //     printf("In ready queue # %i, is positoin %i, processnum %i \n", j, ready_queue[j].position, ready_queue[j].processNum);
+    // }
+    // struct queue grabber = getItem(ready_queue);
+    // printf("highest priority is stored %i, with processnum %i \n", grabber.position, grabber.processNum);
 
-    printf("Settng first item\n");
-    setItem(ready_queue, 69);
+    // printf("Settng first item\n");
+    // setItem(ready_queue, 69);
 
-    for(j = 0; j < 20; j++){
-        printf("In ready queue # %i, is positoin %i, processnum %i \n", j, ready_queue[j].position, ready_queue[j].processNum);
-    }
-    printf("\n\n");
-    grabber = getItem(ready_queue);
-    printf("highest priority after putting in 69 is %i, with processnum %i\n", grabber.position, grabber.processNum);
+    // for(j = 0; j < 20; j++){
+    //     printf("In ready queue # %i, is positoin %i, processnum %i \n", j, ready_queue[j].position, ready_queue[j].processNum);
+    // }
+    // printf("\n\n");
+    // grabber = getItem(ready_queue);
+    // printf("highest priority after putting in 69 is %i, with processnum %i\n", grabber.position, grabber.processNum);
 
-    setItem(ready_queue, 69);
-    setItem(ready_queue, 70);
+    // setItem(ready_queue, 69);
+    // setItem(ready_queue, 70);
 
-    for(j = 0; j < 20; j++){
-        printf("In ready queue # %i, is positoin %i, processnum %i \n", j, ready_queue[j].position, ready_queue[j].processNum);
-    }
-    printf("\n\n");
-    grabber = getItem(ready_queue);
-    printf("highest priority after putting in 69 and 70 is %i, with processnum %i\n", grabber.position, grabber.processNum);
+    // for(j = 0; j < 20; j++){
+    //     printf("In ready queue # %i, is positoin %i, processnum %i \n", j, ready_queue[j].position, ready_queue[j].processNum);
+    // }
+    // printf("\n\n");
+    // grabber = getItem(ready_queue);
+    // printf("highest priority after putting in 69 and 70 is %i, with processnum %i\n", grabber.position, grabber.processNum);
 
-    return 0;
+    // return 0;
 
     //Create shared memory, key
     const int sh_key = 3147550;
@@ -258,15 +254,18 @@ int main(int argc, char *argv[]){
         exit(1);
     }
 
+    //THIS CAN BE DELETED AFTER TESTING
     printf("Message queue set up\n");
-    int childNum = 0;
-    pid_t child[15];
 
-    int k;
-    for(k = 0; k < 15; k++){
-        child[k] = 0;
-        printf("Intialized %i to %d\n", k, child[k]);
-    }
+    //
+    // int childNum = 0;
+    // pid_t child[15];
+
+    // int k;
+    // for(k = 0; k < 15; k++){
+    //     child[k] = 0;
+    //     printf("Intialized %i to %d\n", k, child[k]);
+    // }
     int i = 0;
     pid_t pid;
     msgbuffer rcvbuf;
@@ -286,6 +285,8 @@ int main(int argc, char *argv[]){
     
     //to break when program has reached 3 real seconds
     bool past3s = false;
+    int procNum = 1;
+    int currentP;
 
     while(1) {// store pids of our first two children to launch
 
@@ -297,26 +298,60 @@ int main(int argc, char *argv[]){
     //OSS: **WHAT DID IT CHOOSE IN WORKER**(not using its entire time quantum, used it's entire time quamtum, terminatedetc.)
     //OSS: **WHAT QUEUE DOES IT GO IN AFTER CHOOSING**(Putting process with PID 3 into blocked queue 'OR' Putting process with PID 3 into ready queue)
 
-        if(clock_gettime( CLOCK_REALTIME, &stop) == -1 ) {
-        perror( "clock gettime" );
-        return EXIT_FAILURE;
-        } 
+        // if(clock_gettime( CLOCK_REALTIME, &stop) == -1 ) {
+        //     perror( "clock gettime" );
+        //     return EXIT_FAILURE;
+        // } 
 
-        sec = (stop.tv_sec - start.tv_sec); 
-        nano = (double)( stop.tv_nsec - start.tv_nsec);
+        // sec = (stop.tv_sec - start.tv_sec); 
+        // nano = (double)( stop.tv_nsec - start.tv_nsec);
 
-        printf("The stop time: %i", sec);
-        printf("\tThe stop time: %i\n", nano);
+        // printf("The stop time: %i", sec);
+        // printf("\tThe stop time: %i\n", nano);
 
-        if(stop.tv_sec - start_prog.tv_sec >= 3){
-            past3s = true;
+        // if(stop.tv_sec - start_prog.tv_sec >= 3){
+        //     past3s = true;
+        // }
+
+        //puts first process in ready queue
+        setItem(ready_queue, procNum);
+
+        //FOR TESTING
+        for(j = 0; j < 20; j++){
+        printf("In ready queue # %i, is positoin %i, processnum %i \n", j, ready_queue[j].position, ready_queue[j].processNum);
+        }
+        printf("\n\n");
+
+        //if the process number in the queue is -1, then there are no processes in the queue
+        if(ready_queue[0].processNum == -1){
+            printf("No items in the ready queue");
         }
 
+        //take the process number at the front of the queue and assign it to a variable
+        currentP = ready_queue[0].processNum;
+        printf("The process at front of queue: %i", currentP);
+
+        //take first item from ready queue
+        getItem(ready_queue);
+
+        //FOR TESTING
+        for(j = 0; j < 20; j++){
+        printf("In ready queue # %i, is positoin %i, processnum %i \n", j, ready_queue[j].position, ready_queue[j].processNum);
+        }
+        printf("\n\n");
+
+        return 0;
         //check if enough time has passed to create a new process
 
 
 
-        //todo: find process in ready queue, tell child the quantum, remove process from ready queue, check if process table is full, check if clock isnt passed time
+        //todo: find process in ready queue, 
+        // tell child the quantum,
+        // remove process from ready queue, 
+        // check if process table is full, 
+        // check if clock isnt passed time
+
+
         //if (a process is in the ready queue){
             pid = fork();
             if (pid > 0) {
@@ -346,7 +381,9 @@ int main(int argc, char *argv[]){
             printf("Sending message to child %i with pid %d \n", childNum, child[childNum]);
 
             if (childNum == 0){
-                strcpy(buf0.strData,"Message to child 0\n");
+                //message contains constant time quantum initialized in oss
+                strcpy(buf0.strData, quantumForPID);
+
                 //send message to worker process
                 if (msgsnd(msqid, &buf0, sizeof(msgbuffer)-sizeof(long), 0) == -1) {
                     perror("msgsnd to child 1 failed\n");
@@ -372,19 +409,21 @@ int main(int argc, char *argv[]){
             perror("failed to receive message in parent\n");
             exit(1);
         }
+        int recievedFromWorker = atoi(buf.strData); //converts quantum message string to an integer
+
+        if(buf.strData == recievedFromWorker){
+            //used all time, put in ready queue
+        }
+        if(buf.strData == recievedFromWorker)
 
         printf("OSS: Dispatching process with PID %d from queue %i at time %i:%ld,", child[childNum], queue, sec, nano);
         printf("OSS: total time this dispatch was %ld nanoseconds", nano);
 
         printf("Parent %d received message: %s my int data was %d\n",getpid(),rcvbuf.strData,rcvbuf.intData);
 
-        
-
-
         //if(all process table is compelted, and requdy quee and blocked queue is empty){
             //break out of loop, end program
         //}
-
 
         childNum++;
         printf("sleeping for a sec\n\n\n\n");
