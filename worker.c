@@ -70,10 +70,9 @@ int main(int argc, char *argv[]){
     int message_back;
     char usedQ[10];
     int i;
-    for(i = 0; i < 4; i++){
-        random_event = randomNumberGenerator(100);  
-        printf("This is the random event: %i", random_event);
-    }
+
+    printf("This is the random event: %i\n", random_event);
+
 
     //uses up all time, returns to ready queue in oss
     if (random_event < 50){
