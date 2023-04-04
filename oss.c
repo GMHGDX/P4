@@ -368,7 +368,9 @@ int main(int argc, char *argv[]){
             perror("failed to receive message in parent\n");
             exit(1);
         }
-        int recievedFromWorker = atoi(buf.strData); //converts message string from worker to an integer
+        printf("Parent %d received message: %s my int data was %d\n",getpid(),rcvbuf.strData,rcvbuf.intData);
+
+        int recievedFromWorker = atoi(rcvbuf.strData); //converts message string from worker to an integer
 
         if(recievedFromWorker == quantum){
             //used all time, put in ready queue
@@ -387,7 +389,7 @@ int main(int argc, char *argv[]){
             printf("ERROR: Worker returned a number that doesnt match any option. Number returned-> %i", recievedFromWorker);
         }
 
-        printf("Parent %d received message: %s my int data was %d\n",getpid(),rcvbuf.strData,rcvbuf.intData);
+        
 
         //if(all process table is compelted, and requdy quee and blocked queue is empty){
             //break out of loop, end program
