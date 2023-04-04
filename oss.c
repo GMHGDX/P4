@@ -72,7 +72,7 @@ void setItem(struct queue* my_queue, int processNum, double total_CPU_time, doub
         if(my_queue[i].position > highest_position){
             highest_position = my_queue[i].position;
             highest_position_num = i;
-            printf("found a higher position %i, with num %i \n", highest_position, highest_position_num);
+            //printf("found a higher position %i, with num %i \n", highest_position, highest_position_num);
         }
     }
     if(highest_position == -1){
@@ -239,7 +239,7 @@ int main(int argc, char *argv[]){
     }
     
     //initialization of each value for use in while loop
-    int procNum = 1; //process number
+    int procNum = 0; //process number
     int currentP;  //proceess taken out of queue
     int simPID = 10000; //simulated PID
     int childrenToLaunch = 0;
@@ -279,11 +279,12 @@ int main(int argc, char *argv[]){
         current_time = (double)(stop.tv_sec - start.tv_sec) + ((double)( stop.tv_nsec - start.tv_nsec))/BILLION;
 
         
-        if(procNum == 1){
+        if(procNum == 0){
+            procNum++;
             setItem(ready_queue, procNum, 0, 0); // put first process into ready queue
             printf("CREATING NEW PROCESS\n");
         }
-        if(procNum > 1 && newProcTime <= current_time && current_time <= 3 && procNum < 3){    //Code to generate new process
+        if(procNum >= 1 && newProcTime <= current_time && current_time <= 3 && procNum < 3){    //Code to generate new process
             childNum++; //increment child for new message
             procNum++; //set next process (will be 2)
             simPID++; //increment simulated PID (will be 10001)
