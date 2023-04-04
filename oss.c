@@ -33,12 +33,14 @@ typedef struct msgbuffer {
 struct queue{
     int processNum;
     int position;
+    double total_CPU_time;    //Time quantum used by process
+    double total_system_time; //Total time from start to finish
 };
 struct queue* ready_queue;
 struct queue* blocked_queue;
 
 
-int getItem(struct queue* my_queue){
+struct queue getItem(struct queue* my_queue){
     int i;
     int lowest_position = 999;
     int lowest_position_num = -1;
@@ -56,11 +58,13 @@ int getItem(struct queue* my_queue){
     struct queue return_block = my_queue[lowest_position_num];
     my_queue[lowest_position_num].position = -1;
     my_queue[lowest_position_num].processNum = -1;
+    my_queue[lowest_position_num].total_CPU_time = -1;
+    my_queue[lowest_position_num].total_system_time = -1;
 
-    return return_block.processNum;
+    return return_block;
 }
 
-void setItem(struct queue* my_queue, int processNum){
+void setItem(struct queue* my_queue, int processNum, double total_CPU_time, double total_system_time){
     int i;
     int highest_position = -1;
     int highest_position_num = -1;
@@ -77,6 +81,8 @@ void setItem(struct queue* my_queue, int processNum){
     struct queue set_block;
     set_block.position = highest_position+1;
     set_block.processNum = processNum;
+    set_block.total_CPU_time = total_CPU_time;
+    set_block.total_system_time = total_system_time;
 
     bool worked = false;
     for(i=0;i<20;i++){
@@ -254,41 +260,35 @@ int main(int argc, char *argv[]){
         exit(1);
     }
 
-    //THIS CAN BE DELETED AFTER TESTING
-    printf("Message queue set up\n");
-
-    //
-    int childNum = 0;
-    pid_t child[100];
-
-    // int k;
-    // for(k = 0; k < 15; k++){
-    //     child[k] = 0;
-    //     printf("Intialized %i to %d\n", k, child[k]);
-    // }
-    int i = 0;
-    pid_t pid;
-    msgbuffer rcvbuf;
-
-
-    //start the program clock (used for checking if 3 real time secs have passed)
-    if( clock_gettime( CLOCK_REALTIME, &start_prog) == -1 ) {
+    //start the program clock (used for checking if 3 real time seconds have passed and CPU time)
+    if( clock_gettime( CLOCK_REALTIME, &start) == -1 ) {
       perror( "clock gettime" );
       return EXIT_FAILURE;
     }
 
-    double newProcsSec = randomNumberGenerator(maxSec) + start_prog.tv_sec;
-    double newProcsNS = randomNumberGenerator(maxNano) + start_prog.tv_nsec;
+    double newProcsSec = randomNumberGenerator(maxSec) + start.tv_sec;
+    double newProcsNS = randomNumberGenerator(maxNano) + start.tv_nsec;
 
     printf("random number - seconds: %i", newProcsSec);
     printf("\trandom number - Nano: %i\n", BILLION);
     
-    //to break when program has reached 3 real seconds
-    bool past3s = false;
-    int procNum = 1;
-    int currentP;
+    //initialization of each value for use in while loop
+    bool past3s = false; //for tracking three seconds
+    int procNum = 1; //tracking process number
+    int currentP;  //tracking proceess taken out of queue
+    int simPID = 10000; //creating simulated PID and incrementing by one each loop
+    int childrenToLaunch = 0;
 
-    while(1) {// store pids of our first two children to launch
+    int childNum = 0; 
+    pid_t child[100]; //create array for child number to send messages to respective child
+
+    int i = 0;
+    pid_t pid;
+    msgbuffer rcvbuf;
+
+    struct queue queueGrabber; //for grabbing the struct out of getItem
+
+    while(1) {
 
     //ALL OUTPUT
     //OSS: Generating process with PID 3 and putting it in queue 0 at time 0:5000015
@@ -298,13 +298,9 @@ int main(int argc, char *argv[]){
     //OSS: **WHAT DID IT CHOOSE IN WORKER**(not using its entire time quantum, used it's entire time quamtum, terminatedetc.)
     //OSS: **WHAT QUEUE DOES IT GO IN AFTER CHOOSING**(Putting process with PID 3 into blocked queue 'OR' Putting process with PID 3 into ready queue)
 
-        // if(clock_gettime( CLOCK_REALTIME, &stop) == -1 ) {
-        //     perror( "clock gettime" );
-        //     return EXIT_FAILURE;
-        // } 
 
-        // sec = (stop.tv_sec - start.tv_sec); 
-        // nano = (double)( stop.tv_nsec - start.tv_nsec);
+
+        
 
         // printf("The stop time: %i", sec);
         // printf("\tThe stop time: %i\n", nano);
@@ -312,17 +308,18 @@ int main(int argc, char *argv[]){
         // if(stop.tv_sec - start_prog.tv_sec >= 3){
         //     past3s = true;
         // }
-
+       
         //puts first process in ready queue
-        setItem(ready_queue, procNum);
+        setItem(ready_queue, procNum, 0, 0);
 
         //if the process number in the queue is -1, then there are no processes in the queue
         if(ready_queue[0].processNum == -1){
             printf("No items in the ready queue");
         }
 
-        //take process out of the ready queue that has been in there the longest
-        currentP = getItem(ready_queue);
+        //take process out of the ready queue that has been in there the longest 
+        queueGrabber = getItem(ready_queue);
+        currentP = queueGrabber.processNum;
 
         //create child if there is a process in the ready queue
         if(currentP > -1){
@@ -375,9 +372,8 @@ int main(int argc, char *argv[]){
         //used all time, put in ready queue
         if(recievedFromWorker == quantum){
             printf("used all time, put in ready queue!\n");
-
             //puts current process back in ready queue
-            setItem(ready_queue, procNum);
+            setItem(ready_queue, procNum, 0, 0);
 
             for(j = 0; j < 20; j++){
             printf("In ready queue # %i, is positoin %i, processnum %i \n", j, ready_queue[j].position, ready_queue[j].processNum);
@@ -389,7 +385,7 @@ int main(int argc, char *argv[]){
             printf("used up part of the time, put in blocked queue!\n");
 
             //puts current process in blocked queue
-            setItem(blocked_queue, procNum);
+            setItem(blocked_queue, procNum, 0, 0);
 
             for(j = 0; j < 20; j++){
                 printf("In blocked queue # %i, is positoin %i, processnum %i \n", j, blocked_queue[j].position, blocked_queue[j].processNum);
@@ -399,20 +395,44 @@ int main(int argc, char *argv[]){
         else if(recievedFromWorker < 0){
             //terminate
             printf("terminating!\n"); //process stays removed from ready queue
+
+            if(clock_gettime( CLOCK_REALTIME, &stop) == -1 ) {
+                perror( "clock gettime" );
+                return EXIT_FAILURE;
+            } 
+            sec = (stop.tv_sec - start.tv_sec); 
+            nano = (double)( stop.tv_nsec - start.tv_nsec);
+
+            printf("The stop time: %i", sec);
+            printf("\tThe stop time: %i\n", nano);
+            
+            
+            processTable[childrenToLaunch].total_system_time = 0;
         }
         else{
             //This should never print, but just in case
             printf("ERROR: Worker returned a number that doesnt match any option. Number returned-> %i", recievedFromWorker);
         }
 
+        //update all values in the table
+        processTable[childrenToLaunch].occupied = 1;
+        processTable[childrenToLaunch].pid = child[childNum];
+        processTable[childrenToLaunch].sim_pid = simPID;
+        processTable[childrenToLaunch].processNum = procNum;
+        processTable[childrenToLaunch].total_CPU_time = 0;
+
         
+        printTable(fileLogging);
 
         //if(all process table is compelted, and requdy quee and blocked queue is empty){
             //break out of loop, end program
         //}
         
         childNum++; //increment child for new message
-        procNum++; //set next process
+        procNum++; //set next process (will be 2)
+        simPID++; //increment simulated PID (will be 10001)
+        childrenToLaunch++; //for the table
+
         printf("sleeping for a sec\n\n\n\n");
         sleep(maxSec);
         if(childNum == 1){
@@ -433,4 +453,20 @@ int main(int argc, char *argv[]){
     fclose(fileLogging);
 
     return 0;
+}
+
+//Print the process table
+void printTable(FILE* fileLogging){
+    printf("Occupied\tPID\tSimulated PID\t\tProcessNumber\t\tCPU Time\t\tSystem Time\n");
+    fprintf(fileLogging, "Occupied\tPID\tSimulated PID\t\tProcessNumber\t\tCPU Time\t\tSystem Time\n");
+    
+    int i;
+    for(i=0;i<18;i++){
+        if(processTable[i].pid == 0 ){
+            break;
+        }
+        
+        printf("%i\t%i\t\t%d\t\t%d\t%i\n%i\n%f", i, processTable[i].occupied, (long)processTable[i].pid, (long)processTable[i].sim_pid, processTable[i].processNum,processTable[i].total_CPU_time, processTable[i].total_system_time);
+        fprintf(fileLogging, "%i\t%i\t\t%d\t\t%d\t%i\n%i\n%f", i, processTable[i].occupied, (long)processTable[i].pid, (long)processTable[i].sim_pid, processTable[i].processNum,processTable[i].total_CPU_time, processTable[i].total_system_time);     
+    }
 }
