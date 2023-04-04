@@ -258,8 +258,8 @@ int main(int argc, char *argv[]){
     printf("Message queue set up\n");
 
     //
-    // int childNum = 0;
-    // pid_t child[15];
+    int childNum = 0;
+    pid_t child[15];
 
     // int k;
     // for(k = 0; k < 15; k++){
@@ -409,14 +409,14 @@ int main(int argc, char *argv[]){
             perror("failed to receive message in parent\n");
             exit(1);
         }
-        int recievedFromWorker = atoi(buf.strData); //converts quantum message string to an integer
+        int recievedFromWorker = atoi(buf0.strData); //converts quantum message string to an integer
 
         if(buf.strData == recievedFromWorker){
             //used all time, put in ready queue
         }
         if(buf.strData == recievedFromWorker)
 
-        printf("OSS: Dispatching process with PID %d from queue %i at time %i:%ld,", child[childNum], queue, sec, nano);
+        printf("OSS: Dispatching process with PID %d from queue %i at time %i:%ld,", child[childNum], procNum, sec, nano);
         printf("OSS: total time this dispatch was %ld nanoseconds", nano);
 
         printf("Parent %d received message: %s my int data was %d\n",getpid(),rcvbuf.strData,rcvbuf.intData);
