@@ -125,6 +125,7 @@ int main(int argc, char *argv[]){
     struct timespec start, stop, start_prog;
     double sec;
     double nano;
+    double termTime;
 
     //default logfile name
     char* logFile = "logfile";
@@ -400,14 +401,10 @@ int main(int argc, char *argv[]){
                 perror( "clock gettime" );
                 return EXIT_FAILURE;
             } 
-            sec = (stop.tv_sec - start.tv_sec); 
-            nano = (double)( stop.tv_nsec - start.tv_nsec);
+            termTime = (double)(stop.tv_sec - start.tv_sec) + (double)( stop.tv_nsec - start.tv_nsec)/BILLION; 
 
-            printf("The stop time: %i", sec);
-            printf("\tThe stop time: %i\n", nano);
-            
-            
-            processTable[childrenToLaunch].total_system_time = 0;
+            printf("The stop time: %i", termTime);        
+            processTable[childrenToLaunch].total_system_time = termTime;
         }
         else{
             //This should never print, but just in case
@@ -466,7 +463,7 @@ void printTable(FILE* fileLogging){
             break;
         }
         
-        printf("%i\t\t%i\t\t%d\t\t%d\t\t\t%i\t\t\t%f\t\t\t%f\n", i, processTable[i].occupied, (long)processTable[i].pid, (long)processTable[i].sim_pid, processTable[i].processNum,processTable[i].total_CPU_time, processTable[i].total_system_time);
-        fprintf(fileLogging, "%i\t%i\t\t%d\t\t%d\t%i\t\t\t%f\t\t\t%f\n", i, processTable[i].occupied, (long)processTable[i].pid, (long)processTable[i].sim_pid, processTable[i].processNum,processTable[i].total_CPU_time, processTable[i].total_system_time);     
+        printf("%i\t\t%i\t\t%d\t\t%d\t\t\t%i\t\t\t%f\t\t%f\n", i, processTable[i].occupied, (long)processTable[i].pid, (long)processTable[i].sim_pid, processTable[i].processNum,processTable[i].total_CPU_time, processTable[i].total_system_time);
+        fprintf(fileLogging, "%i\t%i\t\t%d\t\t%d\t%i\t\t\t%f\t\t%f\n", i, processTable[i].occupied, (long)processTable[i].pid, (long)processTable[i].sim_pid, processTable[i].processNum,processTable[i].total_CPU_time, processTable[i].total_system_time);     
     }
 }
