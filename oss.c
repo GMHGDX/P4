@@ -457,8 +457,8 @@ int main(int argc, char *argv[]){
 
 //Print the process table
 void printTable(FILE* fileLogging){
-    printf("Occupied\tPID\tSimulated PID\t\tProcessNumber\t\tCPU Time\t\tSystem Time\n");
-    fprintf(fileLogging, "Occupied\tPID\tSimulated PID\t\tProcessNumber\t\tCPU Time\t\tSystem Time\n");
+    printf("Position\tOccupied\tPID\tSimulated PID\t\tProcessNumber\t\tCPU Time\t\tSystem Time\n");
+    fprintf(fileLogging, "Position\tOccupied\tPID\tSimulated PID\t\tProcessNumber\t\tCPU Time\t\tSystem Time\n");
     
     int i;
     for(i=0;i<18;i++){
