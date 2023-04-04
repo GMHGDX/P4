@@ -411,10 +411,10 @@ int main(int argc, char *argv[]){
         }
         int recievedFromWorker = atoi(buf0.strData); //converts quantum message string to an integer
 
-        if(buf.strData == recievedFromWorker){
+        if(buf0.strData == recievedFromWorker){
             //used all time, put in ready queue
         }
-        if(buf.strData == recievedFromWorker)
+        if(buf0.strData == recievedFromWorker)
 
         printf("OSS: Dispatching process with PID %d from queue %i at time %i:%ld,", child[childNum], procNum, sec, nano);
         printf("OSS: total time this dispatch was %ld nanoseconds", nano);
