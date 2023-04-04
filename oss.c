@@ -51,8 +51,9 @@ struct queue getItem(struct queue* my_queue){
         }
     }
 
+    //if nothing is in queue, send error 
     if(lowest_position_num == -1){
-        printf("ERROR: nothting is in queue\n");
+        printf("ERROR: nothing is in queue\n");
         //exit(1);
     }
     struct queue return_block = my_queue[lowest_position_num];
@@ -314,8 +315,12 @@ int main(int argc, char *argv[]){
         }
 
         //take process out of the ready queue that has been in there the longest 
-        queueGrabber = getItem(ready_queue);
-        currentP = queueGrabber.processNum;
+        if(!isQueueEmpty(ready_queue)){
+            queueGrabber = getItem(ready_queue);
+            currentP = queueGrabber.processNum;
+        }else{
+            currentP = -1;
+        }
 
         //create child if there is a process in the ready queue
         if(currentP > -1){
@@ -362,6 +367,7 @@ int main(int argc, char *argv[]){
             printf("finsihed sending message to child %i with pid %d \n", childNum, child[childNum]);
         }
 
+        printf("HEY! Where my message at?");
         //recieve message back from child in worker, decide where it goes in the queue
         if (msgrcv(msqid, &rcvbuf,sizeof(msgbuffer), getpid(),0) == -1) {
             perror("failed to receive message in parent\n");
