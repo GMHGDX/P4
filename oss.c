@@ -462,7 +462,7 @@ void printTable(FILE* fileLogging){
     
     int i;
     for(i=0;i<18;i++){
-        if(processTable[i].pid == 0 ){
+        if(processTable[i].pid == -1 ){
             break;
         }
         
