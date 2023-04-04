@@ -401,9 +401,9 @@ int main(int argc, char *argv[]){
                 perror( "clock gettime" );
                 return EXIT_FAILURE;
             } 
-            termTime = (double)(stop.tv_sec - start.tv_sec) + (double)( stop.tv_nsec - start.tv_nsec)/BILLION; 
+            termTime = (double)(stop.tv_sec - start.tv_sec) + ((double)( stop.tv_nsec - start.tv_nsec))/BILLION; 
 
-            printf("The stop time: %i", termTime);        
+            printf("The stop time: %f\n", termTime);        
             processTable[childrenToLaunch].total_system_time = termTime;
         }
         else{
