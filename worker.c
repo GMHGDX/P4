@@ -20,6 +20,7 @@ typedef struct msgbuffer {
 //returns random number between 1 and limit(100) for weighted choosing period
 int randomNumberGenerator(int limit){
     int sec;
+    srand(time(NULL)); //gets a random number for each child instead of the same
     sec = (rand() % (limit)) + 1;
     return sec;
 }
