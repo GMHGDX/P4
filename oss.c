@@ -457,8 +457,8 @@ int main(int argc, char *argv[]){
 
 //Print the process table
 void printTable(FILE* fileLogging){
-    printf("Position\tOccupied\t\tPID\tSimulated PID\t\tProcessNumber\t\tCPU Time\t\tSystem Time\n");
-    fprintf(fileLogging, "Position\tOccupied\t\tPID\tSimulated PID\t\tProcessNumber\t\tCPU Time\t\tSystem Time\n");
+    printf("Position\tOccupied\tPID\tSimulated PID\t\tProcessNumber\t\tCPU Time\t\tSystem Time\n");
+    fprintf(fileLogging, "Position\tOccupied\tPID\tSimulated PID\t\tProcessNumber\t\tCPU Time\t\tSystem Time\n");
     
     int i;
     for(i=0;i<18;i++){
@@ -466,7 +466,7 @@ void printTable(FILE* fileLogging){
             break;
         }
         
-        printf("%i\t\t%i\t\t%d\t\t%d\t%i\n%i\n%f", i, processTable[i].occupied, (long)processTable[i].pid, (long)processTable[i].sim_pid, processTable[i].processNum,processTable[i].total_CPU_time, processTable[i].total_system_time);
+        printf("%i\t\t%i\t\t%d\t%d\t%i\n%i\n%f", i, processTable[i].occupied, (long)processTable[i].pid, (long)processTable[i].sim_pid, processTable[i].processNum,processTable[i].total_CPU_time, processTable[i].total_system_time);
         fprintf(fileLogging, "%i\t%i\t\t%d\t\t%d\t%i\n%i\n%f", i, processTable[i].occupied, (long)processTable[i].pid, (long)processTable[i].sim_pid, processTable[i].processNum,processTable[i].total_CPU_time, processTable[i].total_system_time);     
     }
 }
