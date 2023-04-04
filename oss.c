@@ -122,7 +122,7 @@ int main(int argc, char *argv[]){
     int clock_nano = 0;
 
     //for creating a simulated clock 
-    struct timespec start, stop, start_prog;
+    struct timespec start, stop, start_process;
     double sec;
     double nano;
     double termTime;
@@ -260,24 +260,12 @@ int main(int argc, char *argv[]){
         perror("msgget in parent");
         exit(1);
     }
-
-    //start the program clock (used for checking if 3 real time seconds have passed and CPU time)
-    if( clock_gettime( CLOCK_REALTIME, &start) == -1 ) {
-      perror( "clock gettime" );
-      return EXIT_FAILURE;
-    }
-
-    double newProcsSec = randomNumberGenerator(maxSec) + start.tv_sec;
-    double newProcsNS = randomNumberGenerator(maxNano) + start.tv_nsec;
-
-    printf("random number - seconds: %i", newProcsSec);
-    printf("\trandom number - Nano: %i\n", BILLION);
     
     //initialization of each value for use in while loop
-    bool past3s = false; //for tracking three seconds
-    int procNum = 1; //tracking process number
-    int currentP;  //tracking proceess taken out of queue
-    int simPID = 10000; //creating simulated PID and incrementing by one each loop
+    bool past3s = false; //three second tracker
+    int procNum = 1; //process number
+    int currentP;  //proceess taken out of queue
+    int simPID = 10000; //simulated PID
     int childrenToLaunch = 0;
 
     int childNum = 0; 
@@ -286,8 +274,15 @@ int main(int argc, char *argv[]){
     int i = 0;
     pid_t pid;
     msgbuffer rcvbuf;
+    double lastTime; //keep time from last loop to get accurate time for next processs
 
     struct queue queueGrabber; //for grabbing the struct out of getItem
+    
+    //start the program clock (used for checking if 3 real time seconds have passed and CPU time)
+    if( clock_gettime( CLOCK_REALTIME, &start) == -1 ) {
+        perror( "clock gettime" );
+        return EXIT_FAILURE;
+    }
 
     while(1) {
 
@@ -299,17 +294,14 @@ int main(int argc, char *argv[]){
     //OSS: **WHAT DID IT CHOOSE IN WORKER**(not using its entire time quantum, used it's entire time quamtum, terminatedetc.)
     //OSS: **WHAT QUEUE DOES IT GO IN AFTER CHOOSING**(Putting process with PID 3 into blocked queue 'OR' Putting process with PID 3 into ready queue)
 
+        //creates random second and nanosecond to put into memory
+        double newProcsSec = randomNumberGenerator(maxSec) + start.tv_sec;
+        double newProcsNS = randomNumberGenerator(maxNano) + start.tv_nsec;
 
+        printf("random number - seconds: %i", newProcsSec);
+        printf("\trandom number - Nano: %i\n", BILLION);
+        //put this random number into memory...
 
-        
-
-        // printf("The stop time: %i", sec);
-        // printf("\tThe stop time: %i\n", nano);
-
-        // if(stop.tv_sec - start_prog.tv_sec >= 3){
-        //     past3s = true;
-        // }
-       
         //puts first process in ready queue
         setItem(ready_queue, procNum, 0, 0);
 
@@ -328,6 +320,11 @@ int main(int argc, char *argv[]){
             if (pid > 0) {
                 // save this child's pid for sending message
                 child[childNum] = pid;
+                if( clock_gettime( CLOCK_REALTIME, &start_process) == -1 ) {
+                    perror( "clock gettime" );
+                    return EXIT_FAILURE;
+                }
+                printf("Start time for process is: %f and nano %f", start_process.tv_sec, start_process.tv_nsec);
             }
             else if (pid == 0){
                 // in child, so lets exec off child executable
@@ -360,6 +357,24 @@ int main(int argc, char *argv[]){
 
             printf("finsihed sending message to child %i with pid %d \n", childNum, child[childNum]);
         }
+
+        if(clock_gettime( CLOCK_REALTIME, &stop) == -1 ) {
+                perror( "clock gettime" );
+                return EXIT_FAILURE;
+        } 
+
+
+        lastTime = (double)(stop.tv_sec - start.tv_sec) + ((double)( stop.tv_nsec - start.tv_nsec))/BILLION;
+
+        // if(procNum == 1){
+        //    //Grab time it took for process to choose
+        //     processTable[childrenToLaunch].total_CPU_time = lastTime;
+        // }
+        // else{
+            
+
+        // }
+
 
         //recieve message back from child in worker, decide where it goes in the queue
         if (msgrcv(msqid, &rcvbuf,sizeof(msgbuffer), getpid(),0) == -1) {
@@ -416,7 +431,7 @@ int main(int argc, char *argv[]){
         processTable[childrenToLaunch].pid = child[childNum];
         processTable[childrenToLaunch].sim_pid = simPID;
         processTable[childrenToLaunch].processNum = procNum;
-        processTable[childrenToLaunch].total_CPU_time = 0;
+        
 
         
         printTable(fileLogging);
@@ -435,6 +450,10 @@ int main(int argc, char *argv[]){
         if(childNum == 1){
             break;
         }
+
+                // if(stop.tv_sec - start_prog.tv_sec >= 3){
+        //     past3s = true;
+        // }
     }
 
     //wait(0); //wait for all processes to complete then exit. should check for process tbale to empty actually so make sure you reveieve messages
