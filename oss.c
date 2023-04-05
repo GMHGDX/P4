@@ -369,12 +369,12 @@ int main(int argc, char *argv[]){
             printf("finsihed sending message to child %i with pid %d \n", childNum, child[childNum]);
         }
 
-        if(!isSomthingRunning()){
+        //if(!isSomthingRunning()){
         //recieve message back from child in worker, decide where it goes in the queue
         if (msgrcv(msqid, &rcvbuf,sizeof(msgbuffer), getpid(),0) == -1) {
             perror("failed to receive message in parent\n");
             exit(1);
-        }
+        //}
         printf("Parent %d received message: %s my int data was %d\n",getpid(),rcvbuf.strData,rcvbuf.intData);
         }
         
