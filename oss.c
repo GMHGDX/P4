@@ -395,11 +395,6 @@ int main(int argc, char *argv[]){
             printf("used all time, put in ready queue!\n");
             //puts current process back in ready queue
             setItem(ready_queue, procNum, 0, 0);
-
-            for(j = 0; j < 20; j++){
-            printf("In ready queue # %i, is positoin %i, processnum %i \n", j, ready_queue[j].position, ready_queue[j].processNum);
-            }
-            printf("\n\n");
         }
         //used up part of the time, blocked queue
         else if(recievedFromWorker < quantum && recievedFromWorker > 0){
@@ -407,11 +402,6 @@ int main(int argc, char *argv[]){
 
             //puts current process in blocked queue
             setItem(blocked_queue, procNum, 0, 0);
-
-            for(j = 0; j < 20; j++){
-                printf("In blocked queue # %i, is positoin %i, processnum %i \n", j, blocked_queue[j].position, blocked_queue[j].processNum);
-            }
-            printf("\n\n");
         }
         else if(recievedFromWorker < 0){
             //terminate
@@ -422,19 +412,15 @@ int main(int argc, char *argv[]){
                 return EXIT_FAILURE;
             } 
             termTime = (double)(stop.tv_sec - start.tv_sec) + ((double)( stop.tv_nsec - start.tv_nsec))/BILLION; 
-
-            printf("The stop time: %f\n", termTime);        
+     
             processTable[childrenToLaunch].total_system_time = termTime;
-
 
             termTime = (double)(stop.tv_sec - checktime.tv_sec) + ((double)( stop.tv_nsec - checktime.tv_nsec))/BILLION; 
 
             printf("Check time says the process stopped after: %f\n", termTime);
         }
         else{
-            //This should never print, but just in case
-            continue;
-            //printf("ERROR: Worker returned a number that doesnt match any option. Number returned-> %i", recievedFromWorker);
+            recievedFromWorker = 0;    
         }
         
 
@@ -452,6 +438,9 @@ int main(int argc, char *argv[]){
         
         //printf("is ready queue empty: %d, is blocked queue mepty: %d, NOT is something running in processtable: %d, is time passed 3s : %d\n", isQueueEmpty(ready_queue), isQueueEmpty(blocked_queue), !isSomthingRunning(), current_time > 3 );
         if(isQueueEmpty(ready_queue) && isQueueEmpty(blocked_queue) && !isSomthingRunning() && current_time > 3){  //If all processes have finished work and have terminated, exit program
+            break;
+        }
+        if(procNum == 1){
             break;
         }
     }
@@ -490,11 +479,6 @@ bool isSomthingRunning(){
     }
     return false;
 }
-
-
-
-
-
 
 //Print the process table
 void printTable(FILE* fileLogging){

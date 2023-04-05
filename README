@@ -1,1 +1,7 @@
-This README is possibly the best README of all time
+This project is not completed. All ideas are implemented(most work fine seperately, but not all together)
+- Have a ready and blocked queue that I can put processes in and pull processes out just fine (FIFO)
+- Worker recieves constat time quantum through message and chooses a random task (all time/part time/negative time)
+- Worker sends message back to oss with quantum used 
+- oss decides if process goes in blocked q/ready q/terminate
+- have the times CPU and System right (when testing for one process)
+- Everything worked well for one process, but could not do multiple process
