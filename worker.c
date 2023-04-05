@@ -25,15 +25,6 @@ int randomNumberGenerator(int limit){
     return sec;
 }
 
-//THIS CAN BE DELETED AFTER TESTING
-//recieve quantum
-//weighted randomly decide if it will 
-        //use up all time (process goes back to ready queue)                                50%     (89%)
-        //use up part of the time and get intruppted (process goes back to blocked queue)   30%     (10%)
-        //use up part of the time and terimate (process finishes)                           20%     (1%)
-// send message back of waht it did
-// terminate this child
-
 int main(int argc, char *argv[]){
     msgbuffer buf;
     buf.mtype = 1;
@@ -71,9 +62,6 @@ int main(int argc, char *argv[]){
     int message_back;
     char usedQ[10];
     int i;
-
-    printf("This is the random event: %i\n", random_event);
-
 
     //uses up all time, returns to ready queue in oss
     if (random_event < 50){

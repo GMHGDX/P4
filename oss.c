@@ -334,6 +334,8 @@ int main(int argc, char *argv[]){
                 }
                 printf("Start time for process is: %f and nano %f", stop.tv_sec, stop.tv_nsec);
                 checktime = stop;
+
+                processTable[childrenToLaunch].occupied = 1;
             }
             else if (pid == 0){
                 // in child, so lets exec off child executable
@@ -367,13 +369,23 @@ int main(int argc, char *argv[]){
             printf("finsihed sending message to child %i with pid %d \n", childNum, child[childNum]);
         }
 
-        printf("HEY! Where my message at?");
+        printf("HEY! Where my message at?\n");
         //recieve message back from child in worker, decide where it goes in the queue
         if (msgrcv(msqid, &rcvbuf,sizeof(msgbuffer), getpid(),0) == -1) {
             perror("failed to receive message in parent\n");
             exit(1);
         }
         printf("Parent %d received message: %s my int data was %d\n",getpid(),rcvbuf.strData,rcvbuf.intData);
+
+        if (rcvbuf.intData > 0) {
+            //Child(ren) have finished, start new chilren if needed, exit program if all children have finished
+            for(i = 0; i < 20; i++){
+                if(processTable[i].pid == rcvbuf.intData){
+                    processTable[i].occupied = 0;
+                    break;
+                }
+            }
+         }
 
         int recievedFromWorker = atoi(rcvbuf.strData); //converts message string from worker to an integer
 
@@ -424,7 +436,6 @@ int main(int argc, char *argv[]){
         }
 
         //update all values in the table
-        processTable[childrenToLaunch].occupied = 1;
         processTable[childrenToLaunch].pid = child[childNum];
         processTable[childrenToLaunch].sim_pid = simPID;
         processTable[childrenToLaunch].processNum = procNum;
@@ -436,7 +447,7 @@ int main(int argc, char *argv[]){
 
         printTable(fileLogging);
 
-        printf("is ready queue empty: %d, is blocked queue mepty: %d, NOT is something running in processtable: %d, is time passed 3s : %d", isQueueEmpty(ready_queue), isQueueEmpty(blocked_queue), !isSomthingRunning(), current_time > 3 );
+        printf("is ready queue empty: %d, is blocked queue mepty: %d, NOT is something running in processtable: %d, is time passed 3s : %d\n", isQueueEmpty(ready_queue), isQueueEmpty(blocked_queue), !isSomthingRunning(), current_time > 3 );
         if(isQueueEmpty(ready_queue) && isQueueEmpty(blocked_queue) && !isSomthingRunning() && current_time > 3){  //If all processes have finished work and have terminated, exit program
             break;
         }
