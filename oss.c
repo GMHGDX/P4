@@ -311,7 +311,7 @@ int main(int argc, char *argv[]){
 
         //if the process number in the queue is -1, then there are no processes in the queue
         if(ready_queue[0].processNum == -1){
-            printf("No items in the ready queue");
+            //printf("No items in the ready queue");
         }
 
         //take process out of the ready queue that has been in there the longest 
