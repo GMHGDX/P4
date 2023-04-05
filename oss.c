@@ -285,7 +285,7 @@ int main(int argc, char *argv[]){
             setItem(ready_queue, procNum, 0, 0); // put first process into ready queue
             printf("CREATING NEW PROCESS\n");
         }
-        if(procNum >= 1 && procNum < 10){    //Code to generate new process
+        if(procNum >= 1 && newProcTime <= current_time && current_time <= 3 && procNum < 10){    //Code to generate new process
             childNum++; //increment child for new message
             procNum++; //set next process (will be 2)
             simPID++; //increment simulated PID (will be 10001)
@@ -433,7 +433,8 @@ int main(int argc, char *argv[]){
         }
         else{
             //This should never print, but just in case
-            printf("ERROR: Worker returned a number that doesnt match any option. Number returned-> %i", recievedFromWorker);
+            continue;
+            //printf("ERROR: Worker returned a number that doesnt match any option. Number returned-> %i", recievedFromWorker);
         }
         
 
