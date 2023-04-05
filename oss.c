@@ -369,9 +369,9 @@ int main(int argc, char *argv[]){
             printf("finsihed sending message to child %i with pid %d \n", childNum, child[childNum]);
         }
 
-        printf("HEY! Where my message at?\n");
+        
         //recieve message back from child in worker, decide where it goes in the queue
-        if (msgrcv(msqid, &rcvbuf,sizeof(msgbuffer), getpid(),0) == -1) {
+        if (msgrcv(msqid, &rcvbuf,sizeof(msgbuffer), getpid(),IPC_NOWAIT) == -1) {
             perror("failed to receive message in parent\n");
             exit(1);
         }
