@@ -32,25 +32,16 @@ int main(int argc, char *argv[]){
     key_t key;
 
     // get the key for our message queue
-    if ((key = ftok("oss.c", 1)) == -1) {
-        perror("ftok");
-        exit(1);
-    }
+    if ((key = ftok("oss.c", 1)) == -1) { perror("ftok"); exit(1); }
 
     //access oss.c message queue
-    if ((msqid = msgget(key, PERMS)) == -1) {
-        perror("msgget in child");
-        exit(1);
-    }
+    if ((msqid = msgget(key, PERMS)) == -1) { perror("msgget in child"); exit(1); }
 
     //THIS CAN BE DELETED AFTER TESTING
     printf("Child %d has access to the queue\n",getpid());
 
     // receive a message from oss, but only one for our PID
-    if (msgrcv(msqid, &buf, sizeof(msgbuffer), getpid(), 0) == -1) {
-        perror("failed to receive message from parent\n");
-        exit(1);
-    }
+    if (msgrcv(msqid, &buf, sizeof(msgbuffer), getpid(), 0) == -1) { perror("failed to receive message from parent\n"); exit(1); }
 
     //output message from parent
     //THIS CAN BE DELETED AFTER TESTING
@@ -66,16 +57,13 @@ int main(int argc, char *argv[]){
     //uses up all time, returns to ready queue in oss
     if (random_event < 50){
         message_back = quantum;  // used all of time quantum
-
     }
     //uses up part of the time quantum, gets blocked in oss
     else if (random_event < 80 && random_event >= 50){
-
         message_back = randomNumberGenerator(quantum-1);    //returns 1 - (quantum-1)
     }
     //uses up part of the time quantum, terminates in oss
     else if (random_event >= 80){
-
        message_back = -randomNumberGenerator(quantum-1);    //returns a negative
     } 
 

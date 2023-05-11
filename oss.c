@@ -242,7 +242,7 @@ int main(int argc, char *argv[]){
     //initialization of each value for use in while loop
     int procNum = 0; //process number
     int currentP;  //proceess taken out of queue
-    int simPID = 10000; //simulated PID
+    int simPID = 0; //simulated PID
     int childrenToLaunch = 0;
 
     int childNum = 0; 
@@ -331,8 +331,6 @@ int main(int argc, char *argv[]){
                     perror( "clock gettime" );
                     return EXIT_FAILURE;
                 }
-                //start of system time
-                printf("Start time for process is: %i seconds and %i nano\n", stop.tv_sec, stop.tv_nsec);
                 checktime = stop;
 
                 processTable[childrenToLaunch].occupied = 1;
@@ -411,9 +409,7 @@ int main(int argc, char *argv[]){
                 return EXIT_FAILURE;
             } 
             termTime = (double)(stop.tv_sec - start.tv_sec) + ((double)( stop.tv_nsec - start.tv_nsec))/BILLION; 
-     
             processTable[childrenToLaunch].total_system_time = termTime;
-
             termTime = (double)(stop.tv_sec - checktime.tv_sec) + ((double)( stop.tv_nsec - checktime.tv_nsec))/BILLION; 
 
             printf("Check time says the process stopped after: %f\n", termTime);
