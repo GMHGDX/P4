@@ -1,7 +1,22 @@
 This project is not completed. All ideas are implemented(most work fine seperately, but not all together)
+
+What works:
 - Have a ready and blocked queue that I can put processes in and pull processes out just fine (FIFO)
-- Worker recieves constat time quantum through message and chooses a random task (all time/part time/negative time)
+- Worker recieves constant time quantum through message and chooses a random task (all time/part time/negative time)
 - Worker sends message back to oss with quantum used 
 - oss decides if process goes in blocked q/ready q/terminate
-- have the times CPU and System right (when testing for one process)
-- Everything worked well for one process, but could not do multiple process
+- oss actually puts them in its proper queue or terminates(leaves out of queue)
+- have the CPU and System time set right (when testing for one process)
+- creates logfile with PCB table
+
+- Everything worked well for one process, but could not do multiple process without many errors
+    - This project only runs for one process with other output to demonstrate some of the input I recieved
+
+To run project: 
+./oss -f ""   
+
+^
+"" = string for name of logfile, '-f ""' is optional. It will create a log file named 'logfile' if it is given no -f argument
+
+Github: 
+https://github.com/GMHGDX/P4

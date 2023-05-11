@@ -300,14 +300,13 @@ int main(int argc, char *argv[]){
             }
             newProcTime = newProcsSec + (newProcsNS/BILLION);
 
-            printf("random number - seconds: %i\n", newProcsSec);
-            printf("random number - Nano: %i\n\n", newProcsNS);
+            printf("random number - seconds: %f\n", newProcsSec);
+            printf("random number - Nano: %f\n\n", newProcsNS);
 
             printf("CREATING NEW PROCESS\n");
 
             setItem(ready_queue, procNum, 0, 0); // Puts a new process into ready queue
         }
-
 
         //if the process number in the queue is -1, then there are no processes in the queue
         if(ready_queue[0].processNum == -1){
@@ -317,7 +316,7 @@ int main(int argc, char *argv[]){
         //take process out of the ready queue that has been in there the longest 
         if(!isQueueEmpty(ready_queue)){
             queueGrabber = getItem(ready_queue);
-            currentP = queueGrabber.processNum;
+            currentP = queueGrabber.processNum;      
         }else{
             currentP = -1;
         }
@@ -332,6 +331,7 @@ int main(int argc, char *argv[]){
                     perror( "clock gettime" );
                     return EXIT_FAILURE;
                 }
+                //start of system time
                 printf("Start time for process is: %f and nano %f", stop.tv_sec, stop.tv_nsec);
                 checktime = stop;
 
@@ -369,12 +369,11 @@ int main(int argc, char *argv[]){
             printf("finsihed sending message to child %i with pid %d \n", childNum, child[childNum]);
         }
 
-        //if(!isSomthingRunning()){
         //recieve message back from child in worker, decide where it goes in the queue
         if (msgrcv(msqid, &rcvbuf,sizeof(msgbuffer), getpid(),0) == -1) {
             perror("failed to receive message in parent\n");
             exit(1);
-        //}
+
         printf("Parent %d received message: %s my int data was %d\n",getpid(),rcvbuf.strData,rcvbuf.intData);
         }
         
