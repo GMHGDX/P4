@@ -128,8 +128,8 @@ int main(int argc, char *argv[]){
 
     //for creating a simulated clock 
     struct timespec start, stop, checktime;
-    double sec;
-    double nano;
+    //double sec;
+    //double nano;
     double termTime;
     double current_time;
 
