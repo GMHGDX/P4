@@ -393,14 +393,14 @@ int main(int argc, char *argv[]){
         if(recievedFromWorker == quantum){
             printf("used all time, put in ready queue!\n");
             //puts current process back in ready queue
-            setItem(ready_queue, procNum-1, 0, 0);
+            setItem(ready_queue, procNum, 0, 0);
         }
         //used up part of the time, blocked queue
         else if(recievedFromWorker < quantum && recievedFromWorker > 0){
             printf("used up part of the time, put in blocked queue!\n");
 
             //puts current process in blocked queue
-            setItem(blocked_queue, procNum-1, 0, 0);
+            setItem(blocked_queue, procNum, 0, 0);
         }
         else if(recievedFromWorker < 0){
             //terminate
@@ -424,7 +424,7 @@ int main(int argc, char *argv[]){
         //update all values in the table
         processTable[childrenToLaunch].pid = child[childNum];
         processTable[childrenToLaunch].sim_pid = simPID;
-        processTable[childrenToLaunch].processNum = procNum;
+        processTable[childrenToLaunch].processNum = procNum-1;
         processTable[childrenToLaunch].total_CPU_time = recievedFromWorker;
 
         if(recievedFromWorker < 0){
