@@ -370,12 +370,8 @@ int main(int argc, char *argv[]){
         }
 
         //recieve message back from child in worker, decide where it goes in the queue
-        if (msgrcv(msqid, &rcvbuf,sizeof(msgbuffer), getpid(),0) == -1) {
-            perror("failed to receive message in parent\n");
-            exit(1);
-
+        if (msgrcv(msqid, &rcvbuf,sizeof(msgbuffer), getpid(),0) == -1) { perror("failed to receive message in parent\n"); exit(1);}
         printf("Parent %d received message: %s my int data was %d\n",getpid(),rcvbuf.strData,rcvbuf.intData);
-        }
         
         if (rcvbuf.intData > 0) {
             //Child(ren) have finished, start new chilren if needed, exit program if all children have finished
