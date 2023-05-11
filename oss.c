@@ -263,6 +263,7 @@ int main(int argc, char *argv[]){
     double newProcsSec = randomNumberGenerator(maxSec);
     double newProcsNS = randomNumberGenerator(maxNano);
     double newProcTime = newProcsSec + (newProcsNS/BILLION);
+    double currentTime;
 
     while(1) {
 
@@ -279,7 +280,6 @@ int main(int argc, char *argv[]){
         }
         current_time = (double)(stop.tv_sec - start.tv_sec) + ((double)( stop.tv_nsec - start.tv_nsec))/BILLION;
 
-        
         if(procNum == 0){
             procNum++;
             setItem(ready_queue, procNum, 0, 0); // put first process into ready queue
@@ -349,7 +349,7 @@ int main(int argc, char *argv[]){
                 // fork error
                 perror("fork failed in parent");
             }
-            printf("created child %i with pid %d \n", childNum, child[childNum]);
+            printf("OSS: Generating process %i with PID %d and putting it in queue 0 at time %f\n", childNum, child[childNum], current_time);
         
             // lets send a message only to specific child
             buf.mtype = child[childNum];
