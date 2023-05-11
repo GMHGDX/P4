@@ -240,7 +240,7 @@ int main(int argc, char *argv[]){
     }
     
     //initialization of each value for use in while loop
-    int procNum = -1; //process number
+    int procNum = 0; //process number
     int currentP;  //proceess taken out of queue
     int simPID = 0; //simulated PID
     int childrenToLaunch = 0;
@@ -393,14 +393,14 @@ int main(int argc, char *argv[]){
         if(recievedFromWorker == quantum){
             printf("used all time, put in ready queue!\n");
             //puts current process back in ready queue
-            setItem(ready_queue, procNum, 0, 0);
+            setItem(ready_queue, procNum-1, 0, 0);
         }
         //used up part of the time, blocked queue
         else if(recievedFromWorker < quantum && recievedFromWorker > 0){
             printf("used up part of the time, put in blocked queue!\n");
 
             //puts current process in blocked queue
-            setItem(blocked_queue, procNum, 0, 0);
+            setItem(blocked_queue, procNum-1, 0, 0);
         }
         else if(recievedFromWorker < 0){
             //terminate
