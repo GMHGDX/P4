@@ -332,7 +332,7 @@ int main(int argc, char *argv[]){
                     return EXIT_FAILURE;
                 }
                 //start of system time
-                printf("Start time for process is: %i and nano %i", stop.tv_sec, stop.tv_nsec);
+                printf("Start time for process is: %i seconds and %i nano\n", stop.tv_sec, stop.tv_nsec);
                 checktime = stop;
 
                 processTable[childrenToLaunch].occupied = 1;
