@@ -240,7 +240,7 @@ int main(int argc, char *argv[]){
     }
     
     //initialization of each value for use in while loop
-    int procNum = 0; //process number
+    int procNum = -1; //process number
     int currentP;  //proceess taken out of queue
     int simPID = 0; //simulated PID
     int childrenToLaunch = 0;
