@@ -373,9 +373,9 @@ int main(int argc, char *argv[]){
         printf("Parent %d received message: %s my int data was %d\n",getpid(),rcvbuf.strData,rcvbuf.intData);
 
         if(rcvbuf.strData == 15200){
-            printf("OSS: Generating process %i with PID %d and putting it in ready queue at time %f\n", childNum, child[childNum], current_time);
+            printf("OSS: Generating process %i with PID %d and putting it in the ready queue at time %f\n", childNum, child[childNum], current_time);
         } else {
-            printf("OSS: Generating process %i with PID %d and putting it in blocked queue at time %f\n", childNum, child[childNum], current_time);
+            printf("OSS: Generating process %i with PID %d and putting it in the blocked queue at time %f\n", childNum, child[childNum], current_time);
         }
         if (rcvbuf.intData > 0) {
             //Child(ren) have finished, start new chilren if needed, exit program if all children have finished
