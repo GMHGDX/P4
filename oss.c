@@ -349,7 +349,6 @@ int main(int argc, char *argv[]){
                 // fork error
                 perror("fork failed in parent");
             }
-            printf("OSS: Generating process %i with PID %d and putting it in queue 0 at time %f\n", childNum, child[childNum], current_time);
         
             // lets send a message only to specific child
             buf.mtype = child[childNum];
@@ -372,7 +371,12 @@ int main(int argc, char *argv[]){
         //recieve message back from child in worker, decide where it goes in the queue
         if (msgrcv(msqid, &rcvbuf,sizeof(msgbuffer), getpid(),0) == -1) { perror("failed to receive message in parent\n"); exit(1);}
         printf("Parent %d received message: %s my int data was %d\n",getpid(),rcvbuf.strData,rcvbuf.intData);
-        
+
+        if(rcvbuf.strData == 15200){
+            printf("OSS: Generating process %i with PID %d and putting it in ready queue at time %f\n", childNum, child[childNum], current_time);
+        } else {
+            printf("OSS: Generating process %i with PID %d and putting it in blocked queue at time %f\n", childNum, child[childNum], current_time);
+        }
         if (rcvbuf.intData > 0) {
             //Child(ren) have finished, start new chilren if needed, exit program if all children have finished
             for(i = 0; i < 20; i++){
