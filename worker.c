@@ -62,12 +62,12 @@ int main(int argc, char *argv[]){
     //uses up part of the time quantum, gets blocked in oss
     else if (random_event < 80 && random_event >= 50){
         message_back = randomNumberGenerator(quantum-1);    //returns 1 - (quantum-1)
-        printf("Worker: Child %d chose to use part of the time quantum",getpid());
+        printf("Worker: Child %d chose to use part of the time quantum\n",getpid());
     }
     //uses up part of the time quantum, terminates in oss
     else if (random_event >= 80){
        message_back = -randomNumberGenerator(quantum-1);    //returns a negative
-       printf("Worker: Child %d chose to use part of the time quantum and terminate",getpid());
+       printf("Worker: Child %d chose to use part of the time quantum and terminate\n",getpid());
     } 
     
     if(random_event < 80){
