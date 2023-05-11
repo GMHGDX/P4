@@ -57,34 +57,39 @@ int main(int argc, char *argv[]){
     //uses up all time, returns to ready queue in oss
     if (random_event < 50){
         message_back = quantum;  // used all of time quantum
+        printf("Worker: Child %d chose to use the entire time quantum\n",getpid());
     }
     //uses up part of the time quantum, gets blocked in oss
     else if (random_event < 80 && random_event >= 50){
         message_back = randomNumberGenerator(quantum-1);    //returns 1 - (quantum-1)
+        printf("Worker: Child %d chose to use part of the time quantum",getpid());
     }
     //uses up part of the time quantum, terminates in oss
     else if (random_event >= 80){
        message_back = -randomNumberGenerator(quantum-1);    //returns a negative
+       printf("Worker: Child %d chose to use part of the time quantum and terminate",getpid());
     } 
+    
+    if(random_event < 80){
+        //convert quantum int back to string to send message back to our parent
+        snprintf(usedQ, sizeof(usedQ), "%i", message_back); 
+    
+        // now send a message back to our parent
+        buf.mtype = getppid();
+        buf.intData = getppid();
 
-    //convert quantum int back to string to send message back to our parent
-    snprintf(usedQ, sizeof(usedQ), "%i", message_back); 
-   
-    // now send a message back to our parent
-    buf.mtype = getppid();
-    buf.intData = getppid();
+        //copy the quantum returned from choosing period into msg queue string data
+        strcpy(buf.strData, usedQ);
 
-    //copy the quantum returned from choosing period into msg queue string data
-    strcpy(buf.strData, usedQ);
-
-    //send that message back to oss and have it decide what queue to put the process in or if it will terminate the process
-    if (msgsnd(msqid,&buf,sizeof(msgbuffer)-sizeof(long),0) == -1) {
-        perror("msgsnd to parent failed\n");
-        exit(1);
+        //send that message back to oss and have it decide what queue to put the process in or if it will terminate the process
+        if (msgsnd(msqid,&buf,sizeof(msgbuffer)-sizeof(long),0) == -1) {
+            perror("msgsnd to parent failed\n");
+            exit(1);
+        }
     }
 
     //THIS CAN BE DELETED AFTER TESTING
-    printf("Child %d is ending\n",getpid());
+    printf("Child %d is terminating\n",getpid());
 
     return 0;
 }

@@ -268,7 +268,7 @@ int main(int argc, char *argv[]){
     while(1) {
 
     //ALL OUTPUT
-    //OSS: Generating process with PID 3 and putting it in queue 0 at time 0:5000015
+    //--OSS: Generating process with PID 3 and putting it in queue 0 at time 0:5000015
     //OSS: Dispatching process with PID 3 from queue 0 at time 0:5000805,
     //OSS: total time this dispatch was 790 nanoseconds,
     //OSS: Receiving that process with PID 3 ran for 270000 nanoseconds,
@@ -371,7 +371,7 @@ int main(int argc, char *argv[]){
         //recieve message back from child in worker, decide where it goes in the queue
         if (msgrcv(msqid, &rcvbuf,sizeof(msgbuffer), getpid(),0) == -1) { perror("failed to receive message in parent\n"); exit(1);}
         printf("Parent %d received message: %s my int data was %d\n",getpid(),rcvbuf.strData,rcvbuf.intData);
-
+        
         if(rcvbuf.strData == 15200){
             printf("OSS: Generating process %i with PID %d and putting it in the ready queue at time %f\n", childNum, child[childNum], current_time);
         } else {
