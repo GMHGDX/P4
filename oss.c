@@ -359,7 +359,7 @@ int main(int argc, char *argv[]){
         }else{
         if(rcvbuf.strData == 15200){
             printf("OSS: Generating process %i with PID %d and putting it in the ready queue at time %f\n", childNum, child[childNum], current_time);
-        if else(rcvbuf.strData < 0){
+        }if else(rcvbuf.strData < 0){
             wait(0);
             printf("OSS: Process %i is terminating", childNum);
         } else {
@@ -478,4 +478,5 @@ int printTable(FILE* fileLogging){
         fprintf(fileLogging, "%i\t%i\t\t%d\t\t%d\t%i\t\t\t%f\t\t%f\n", i, processTable[i].occupied, (long)processTable[i].pid, (long)processTable[i].sim_pid, processTable[i].processNum,processTable[i].total_CPU_time, processTable[i].total_system_time);     
     }
 }
+
 
