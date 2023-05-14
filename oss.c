@@ -454,7 +454,7 @@ bool isSomthingRunning(){
 }
 
 //Print the process table
-int printTable(FILE* fileLogging){
+void printTable(FILE* fileLogging){
     printf("Position\tOccupied\tPID\t\tSimulated PID\t\tProcessNumber\t\tCPU Time\t\tSystem Time\n");
     fprintf(fileLogging, "Position\tOccupied\tPID\t\tSimulated PID\t\tProcessNumber\t\tCPU Time\t\tSystem Time\n");
     
