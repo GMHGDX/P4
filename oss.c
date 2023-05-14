@@ -263,12 +263,7 @@ int main(int argc, char *argv[]){
             return EXIT_FAILURE;
         }
         current_time = (double)(stop.tv_sec - start.tv_sec) + ((double)( stop.tv_nsec - start.tv_nsec))/BILLION;
-
-        if(procNum == 0){
-            //procNum++;
-            setItem(ready_queue, procNum, 0, 0); // put first process into ready queue
-            printf("CREATING NEW PROCESS\n");
-        }
+ 
         if(procNum >= 1 && newProcTime <= current_time && current_time <= 3 && procNum < 10){    //Code to generate new process
             childNum++; //increment child for new message
             simPID++; //increment simulated PID (will be 10001)
@@ -290,6 +285,13 @@ int main(int argc, char *argv[]){
 
             setItem(ready_queue, procNum, 0, 0); // Puts a new process into ready queue
             procNum++; //set next process (will be 1)
+            printf("NEW PROCESS NUMBER: %i", procNum);
+        }
+        if(procNum == 0){
+            procNum++;
+            printf("NEW PROCESS NUMBER: %i", procNum);
+            setItem(ready_queue, procNum, 0, 0); // put first process into ready queue
+            printf("CREATING NEW PROCESS\n");
         }
 
         //if the process number in the queue is -1, then there are no processes in the queue
