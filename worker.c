@@ -20,7 +20,6 @@ typedef struct msgbuffer {
 //returns random number between 1 and limit(100) for weighted choosing period
 int randomNumberGenerator(int limit){
     int sec;
-    srand(time(NULL)); //gets a random number for each child instead of the same
     sec = (rand() % (limit)) + 1;
     return sec;
 }
@@ -30,6 +29,7 @@ int main(int argc, char *argv[]){
     buf.mtype = 1;
     int msqid = 0;
     key_t key;
+    srand(time(NULL)); //gets a random number for each child instead of the same
 
     // get the key for our message queue
     if ((key = ftok("oss.c", 1)) == -1) { perror("ftok"); exit(1); }
