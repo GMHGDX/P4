@@ -334,10 +334,10 @@ int main(int argc, char *argv[]){
                 perror("fork failed in parent");
             }
             printf("OSS - Sending message to child %i with pid %d \n", childNum, child[childNum]);
-                  buf.mtype = child[childNum];
-            buf.intData = child[childNum]; // we will give it the pid we are sending to, so we know it received it
+            
             // lets send a message only to specific child
-      
+            buf.mtype = child[childNum];
+            buf.intData = child[childNum]; // we will give it the pid we are sending to, so we know it received it
             strcpy(buf.strData, quantumForPID);//message contains constant time quantum initialized in oss
             if (msgsnd(msqid, &buf, sizeof(msgbuffer)-sizeof(long), 0) == -1) { //send message to worker process
                 perror("msgsnd to child 1 failed\n");
@@ -350,7 +350,7 @@ int main(int argc, char *argv[]){
         if (msgrcv(msqid, &rcvbuf,sizeof(msgbuffer), getpid(),0) == -1) { perror("failed to receive message in parent\n"); exit(1);}
         printf("Parent %d received message: %s my int data was %d\n",getpid(),rcvbuf.strData,rcvbuf.intData);
         
-        if(rcvbuf.strData == 15200){
+        if(rcvbuf.strData == '15200'){
             printf("OSS: Generating process %i with PID %d and putting it in the ready queue at time %f\n", childNum, child[childNum], current_time);
         } else {
             printf("OSS: Generating process %i with PID %d and putting it in the blocked queue at time %f\n", childNum, child[childNum], current_time);
