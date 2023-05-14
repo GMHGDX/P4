@@ -358,15 +358,13 @@ int main(int argc, char *argv[]){
         //recieve message back from child in worker, decide where it goes in the queue
         if (msgrcv(msqid, &rcvbuf,sizeof(msgbuffer), getpid(),0) == -1) { perror("failed to receive message in parent\n"); exit(1);}
         printf("Parent %d received message: %s my int data was %d\n",getpid(),rcvbuf.strData,rcvbuf.intData);
-        int recievedFromWorker = atoi(rcvbuf.strData); //converts message string from worker to an integer
-        int intDataWorker = atoi(rcvbuf.intData);
         
-        if(recievedFromWorker == 15200){
+        if(rcvbuf.strData == 15200){
             printf("OSS: Generating process %i with PID %d and putting it in the ready queue at time %f\n", childNum, child[childNum], current_time);
         } else {
             printf("OSS: Generating process %i with PID %d and putting it in the blocked queue at time %f\n", childNum, child[childNum], current_time);
         }
-        if (intDataWorker > 0) {
+        if (rcvbuf.intData > 0) {
             //Child(ren) have finished, start new chilren if needed, exit program if all children have finished
             for(i = 0; i < 20; i++){
                 if(processTable[i].pid == rcvbuf.intData){
@@ -375,7 +373,9 @@ int main(int argc, char *argv[]){
                 }
             }
          }
-         
+
+        int recievedFromWorker = atoi(rcvbuf.strData); //converts message string from worker to an integer
+
         //used all time, put in ready queue
         if(recievedFromWorker == quantum){
             printf("used all time, put in ready queue!\n");
