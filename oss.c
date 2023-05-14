@@ -348,7 +348,7 @@ int main(int argc, char *argv[]){
         }
 
         //recieve message back from child in worker, decide where it goes in the queue
-        msgresult = (msgrcv(msqid, &rcvbuf,sizeof(msgbuffer), getpid(),0) == -1) { perror("failed to receive message in parent\n"); exit(1);}
+        msgresult = (msgrcv(msqid, &rcvbuf,sizeof(msgbuffer), getpid(),IPC_NOWAIT) == -1); //{ perror("failed to receive message in parent\n"); exit(1);}
         printf("Parent %d received message: %s my int data was %d\n",getpid(),rcvbuf.strData,rcvbuf.intData);
         if(msgresult == -1){
             if(errno == ENOMSG){
