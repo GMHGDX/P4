@@ -213,7 +213,7 @@ int main(int argc, char *argv[]){
     }
 
     //Open the log file before input begins 
-    fileLogging = fopen(logFile, "w+");
+    int fileLogging = fopen(logFile, "w+");
     
     //beginning of sending and recieving messages 
     msgbuffer buf;
