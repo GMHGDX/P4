@@ -362,7 +362,6 @@ int main(int argc, char *argv[]){
         if else(rcvbuf.strData < 0){
             wait(0);
             printf("OSS: Process %i is terminating", childNum);
-        }
         } else {
             printf("OSS: Generating process %i with PID %d and putting it in the blocked queue at time %f\n", childNum, child[childNum], current_time);
         }
