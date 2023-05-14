@@ -30,7 +30,7 @@ int main(int argc, char *argv[]){
     buf.mtype = 1;
     int msqid = 0;
     key_t key;
-
+    printf("hi");
     srand(time(NULL)); //gets a random number for each child instead of the same
     printf("WORKER: Message queue key %i", key);
     // get the key for our message queue
