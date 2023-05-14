@@ -412,7 +412,7 @@ int main(int argc, char *argv[]){
         // if(isQueueEmpty(ready_queue) && isQueueEmpty(blocked_queue) && !isSomthingRunning() && current_time > 3){  //If all processes have finished work and have terminated, exit program
         //     break;
         // }
-        if(procNum == 2){
+        if(procNum == 0){
             break;
         }
     }
