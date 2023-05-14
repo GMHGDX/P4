@@ -122,14 +122,8 @@ int main(int argc, char *argv[]){
     int const maxSec = 1;
     int const maxNano = BILLION - 1;
 
-    //Initialize our clock
-    int clock_sec = 0;
-    int clock_nano = 0;
-
     //for creating a simulated clock 
     struct timespec start, stop, checktime;
-    double sec;
-    double nano;
     double termTime;
     double current_time;
 
@@ -251,7 +245,6 @@ int main(int argc, char *argv[]){
     int i = 0;
     pid_t pid;
     msgbuffer rcvbuf;
-    double lastTime; //keep time from last loop to get accurate time for next processs
 
     struct queue queueGrabber; //for grabbing the struct out of getItem
     
@@ -263,17 +256,8 @@ int main(int argc, char *argv[]){
     double newProcsSec = randomNumberGenerator(maxSec);
     double newProcsNS = randomNumberGenerator(maxNano);
     double newProcTime = newProcsSec + (newProcsNS/BILLION);
-    double currentTime;
 
     while(1) {
-
-    //ALL OUTPUT
-    //--OSS: Generating process with PID 3 and putting it in queue 0 at time 0:5000015
-    //OSS: Dispatching process with PID 3 from queue 0 at time 0:5000805,
-    //OSS: total time this dispatch was 790 nanoseconds,
-    //OSS: Receiving that process with PID 3 ran for 270000 nanoseconds,
-    //OSS: **WHAT DID IT CHOOSE IN WORKER**(not using its entire time quantum, used it's entire time quamtum, terminatedetc.)
-    //OSS: **WHAT QUEUE DOES IT GO IN AFTER CHOOSING**(Putting process with PID 3 into blocked queue 'OR' Putting process with PID 3 into ready queue)
         if(clock_gettime( CLOCK_REALTIME, &stop) == -1 ) {
             perror( "clock gettime" );
             return EXIT_FAILURE;
@@ -349,9 +333,7 @@ int main(int argc, char *argv[]){
                 // fork error
                 perror("fork failed in parent");
             }
-        
-
-            printf("Sending message to child %i with pid %d \n", childNum, child[childNum]);
+            printf("OSS - Sending message to child %i with pid %d \n", childNum, child[childNum]);
             
             // lets send a message only to specific child
             buf.mtype = child[childNum];
@@ -361,8 +343,7 @@ int main(int argc, char *argv[]){
                 perror("msgsnd to child 1 failed\n");
                 exit(1);
             }
-
-            printf("finsihed sending message to child %i with pid %d \n", childNum, child[childNum]);
+            printf("OSS - finsihed sending message to child %i with pid %d \n", childNum, child[childNum]);
         }
 
         //recieve message back from child in worker, decide where it goes in the queue
@@ -388,20 +369,20 @@ int main(int argc, char *argv[]){
 
         //used all time, put in ready queue
         if(recievedFromWorker == quantum){
-            printf("used all time, put in ready queue!\n");
+            printf("OSS: used all time, put in ready queue!\n");
             //puts current process back in ready queue
             setItem(ready_queue, procNum, 0, 0);
         }
         //used up part of the time, blocked queue
         else if(recievedFromWorker < quantum && recievedFromWorker > 0){
-            printf("used up part of the time, put in blocked queue!\n");
+            printf("OSS: used up part of the time, put in blocked queue!\n");
 
             //puts current process in blocked queue
             setItem(blocked_queue, procNum, 0, 0);
         }
         else if(recievedFromWorker < 0){
             //terminate
-            printf("terminating!\n"); //process stays removed from ready queue
+            printf("OSS: Terminating process!\n"); //process stays removed from ready queue
 
             if(clock_gettime( CLOCK_REALTIME, &stop) == -1 ) {
                 perror( "clock gettime" );
@@ -484,8 +465,8 @@ void printTable(FILE* fileLogging){
             break;
         }
         
-        printf("%i\t\t%i\t\t%d\t\t%d\t\t\t%i\t\t\t%f\t\t%f\n", i, processTable[i].occupied, (long)processTable[i].pid, (long)processTable[i].sim_pid, processTable[i].processNum,processTable[i].total_CPU_time, processTable[i].total_system_time);
-        fprintf(fileLogging, "%i\t%i\t\t%d\t\t%d\t%i\t\t\t%f\t\t%f\n", i, processTable[i].occupied, (long)processTable[i].pid, (long)processTable[i].sim_pid, processTable[i].processNum,processTable[i].total_CPU_time, processTable[i].total_system_time);     
+        printf("%i\t\t%i\t\t%d\t\t%d\t\t\t%i\t\t\t%f\t\t%i\n", i, processTable[i].occupied, (long)processTable[i].pid, (long)processTable[i].sim_pid, processTable[i].processNum,processTable[i].total_CPU_time, processTable[i].total_system_time);
+        fprintf(fileLogging, "%i\t%i\t\t%d\t\t%d\t%i\t\t\t%i\t\t%f\n", i, processTable[i].occupied, (long)processTable[i].pid, (long)processTable[i].sim_pid, processTable[i].processNum,processTable[i].total_CPU_time, processTable[i].total_system_time);     
     }
 }
 
