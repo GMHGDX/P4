@@ -31,8 +31,8 @@ int main(int argc, char *argv[]){
     int msqid = 0;
     key_t key;
 
-    //srand(time(NULL)); //gets a random number for each child instead of the same
-
+    srand(time(NULL)); //gets a random number for each child instead of the same
+    printf("WORKER: Message queue key %i", key);
     // get the key for our message queue
     if ((key = ftok("oss.c", 1)) == -1) { perror("ftok"); exit(1); }
 
