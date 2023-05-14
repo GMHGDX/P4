@@ -437,13 +437,12 @@ int main(int argc, char *argv[]){
         if(isQueueEmpty(ready_queue) && isQueueEmpty(blocked_queue) && !isSomthingRunning() && current_time > 3){  //If all processes have finished work and have terminated, exit program
             break;
         }
-        if(procNum == 1){
+        if(procNum == 2){
             break;
         }
     }
 
     //wait(0); //wait for all processes to complete then exit. should check for process tbale to empty actually so make sure you reveieve messages
-
 
     // get rid of message queue
     if (msgctl(msqid, IPC_RMID, NULL) == -1) {

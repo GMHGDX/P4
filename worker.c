@@ -37,15 +37,8 @@ int main(int argc, char *argv[]){
     //access oss.c message queue
     if ((msqid = msgget(key, PERMS)) == -1) { perror("msgget in child"); exit(1); }
 
-    //THIS CAN BE DELETED AFTER TESTING
-    printf("Child %d has access to the queue\n",getpid());
-
     // receive a message from oss, but only one for our PID
     if (msgrcv(msqid, &buf, sizeof(msgbuffer), getpid(), 0) == -1) { perror("failed to receive message from parent\n"); exit(1); }
-
-    //output message from parent
-    //THIS CAN BE DELETED AFTER TESTING
-    printf("Child %d received message: %s was my message and my int data was %d\n",getpid(), buf.strData, buf.intData);
 
     //initialization for the childs random, weighted, choosing period
     int quantum = atoi(buf.strData); //converts quantum message string to an integer
