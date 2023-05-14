@@ -281,11 +281,9 @@ int main(int argc, char *argv[]){
             printf("random number - seconds: %f\n", newProcsSec);
             printf("random number - Nano: %f\n\n", newProcsNS);
 
-            printf("CREATING NEW PROCESS\n");
-
             setItem(ready_queue, procNum, 0, 0); // Puts a new process into ready queue
             procNum++; //set next process (will be 1)
-            printf("NEW PROCESS NUMBER: %i", procNum);
+            printf("NEW PROCESS NUMBER IN READY QUEUE: %i", procNum);
         }
         if(procNum == 0){
             printf("NEW PROCESS NUMBER: %i", procNum);

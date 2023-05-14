@@ -48,8 +48,6 @@ int main(int argc, char *argv[]){
     int message_back;
     char usedQ[10];
 
-    printf("This is me before the random event!");
-
     //uses up all time, returns to ready queue in oss
     if (random_event < 50){
         message_back = quantum;  // used all of time quantum
@@ -65,8 +63,6 @@ int main(int argc, char *argv[]){
        message_back = -randomNumberGenerator(quantum-1);    //returns a negative
        printf("Worker: Child %d chose to use part of the time quantum and terminate\n",getpid());
     } 
-    printf("This is me after the random event!");
-    
     if(random_event < 80){
         //convert quantum int back to string to send message back to our parent
         snprintf(usedQ, sizeof(usedQ), "%i", message_back); 
@@ -85,7 +81,6 @@ int main(int argc, char *argv[]){
         }
     }
 
-    //THIS CAN BE DELETED AFTER TESTING
     printf("Child %d is terminating\n",getpid());
 
     return 0;
