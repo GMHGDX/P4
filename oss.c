@@ -334,10 +334,10 @@ int main(int argc, char *argv[]){
                 perror("fork failed in parent");
             }
             printf("OSS - Sending message to child %i with pid %d \n", childNum, child[childNum]);
-            
-            // lets send a message only to specific child
-            buf.mtype = child[childNum];
+                  buf.mtype = child[childNum];
             buf.intData = child[childNum]; // we will give it the pid we are sending to, so we know it received it
+            // lets send a message only to specific child
+      
             strcpy(buf.strData, quantumForPID);//message contains constant time quantum initialized in oss
             if (msgsnd(msqid, &buf, sizeof(msgbuffer)-sizeof(long), 0) == -1) { //send message to worker process
                 perror("msgsnd to child 1 failed\n");
