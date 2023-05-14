@@ -264,7 +264,7 @@ int main(int argc, char *argv[]){
         }
         current_time = (double)(stop.tv_sec - start.tv_sec) + ((double)( stop.tv_nsec - start.tv_nsec))/BILLION;
  
-        if(procNum >= 1 && newProcTime <= current_time && current_time <= 3 && procNum < 10){    //Code to generate new process
+        if(procNum >= 1)//&& newProcTime <= current_time && current_time <= 3 && procNum < 10){    //Code to generate new process
             childNum++; //increment child for new message
             simPID++; //increment simulated PID (will be 10001)
             childrenToLaunch++; //for the table
@@ -288,7 +288,6 @@ int main(int argc, char *argv[]){
             printf("NEW PROCESS NUMBER: %i", procNum);
         }
         if(procNum == 0){
-            procNum++;
             printf("NEW PROCESS NUMBER: %i", procNum);
             setItem(ready_queue, procNum, 0, 0); // put first process into ready queue
             printf("CREATING NEW PROCESS\n");
