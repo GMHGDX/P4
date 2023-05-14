@@ -62,6 +62,7 @@ int main(int argc, char *argv[]){
        message_back = -randomNumberGenerator(quantum-1);    //returns a negative
        printf("Worker: Child %d chose to use part of the time quantum and terminate\n",getpid());
     } 
+    printf("RANDOM EVENT: %i", random_event);
     
     if(random_event < 80){
         //convert quantum int back to string to send message back to our parent

@@ -465,8 +465,8 @@ void printTable(FILE* fileLogging){
             break;
         }
         
-        printf("%i\t\t%i\t\t%d\t\t%d\t\t\t%i\t\t\t%f\t\t%i\n", i, processTable[i].occupied, (long)processTable[i].pid, (long)processTable[i].sim_pid, processTable[i].processNum,processTable[i].total_CPU_time, processTable[i].total_system_time);
-        fprintf(fileLogging, "%i\t%i\t\t%d\t\t%d\t%i\t\t\t%i\t\t%f\n", i, processTable[i].occupied, (long)processTable[i].pid, (long)processTable[i].sim_pid, processTable[i].processNum,processTable[i].total_CPU_time, processTable[i].total_system_time);     
+        printf("%i\t\t%i\t\t%d\t\t%d\t\t\t%i\t\t\t%f\t\t%f\n", i, processTable[i].occupied, (long)processTable[i].pid, (long)processTable[i].sim_pid, processTable[i].processNum,processTable[i].total_CPU_time, processTable[i].total_system_time);
+        fprintf(fileLogging, "%i\t%i\t\t%d\t\t%d\t%i\t\t\t%f\t\t%f\n", i, processTable[i].occupied, (long)processTable[i].pid, (long)processTable[i].sim_pid, processTable[i].processNum,processTable[i].total_CPU_time, processTable[i].total_system_time);     
     }
 }
 
