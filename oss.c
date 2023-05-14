@@ -256,6 +256,7 @@ int main(int argc, char *argv[]){
     double newProcsSec = randomNumberGenerator(maxSec);
     double newProcsNS = randomNumberGenerator(maxNano);
     double newProcTime = newProcsSec + (newProcsNS/BILLION);
+    int msgresult;
 
     while(1) {
         if(clock_gettime( CLOCK_REALTIME, &stop) == -1 ) {
@@ -347,9 +348,15 @@ int main(int argc, char *argv[]){
         }
 
         //recieve message back from child in worker, decide where it goes in the queue
-        if (msgrcv(msqid, &rcvbuf,sizeof(msgbuffer), getpid(),0) == -1) { perror("failed to receive message in parent\n"); exit(1);}
+        msgresult = (msgrcv(msqid, &rcvbuf,sizeof(msgbuffer), getpid(),0) == -1) { perror("failed to receive message in parent\n"); exit(1);}
         printf("Parent %d received message: %s my int data was %d\n",getpid(),rcvbuf.strData,rcvbuf.intData);
-        
+        if(msgresult == -1){
+            if(errno == ENOMSG){
+                //didnt get message, ignore
+            }else{
+                printf("ERROR: Something wrong with message recieved");
+            }
+        }else{
         if(rcvbuf.strData == 15200){
             printf("OSS: Generating process %i with PID %d and putting it in the ready queue at time %f\n", childNum, child[childNum], current_time);
         } else {
@@ -409,7 +416,7 @@ int main(int argc, char *argv[]){
         }
 
         printTable(fileLogging);
-        
+        }
         //printf("is ready queue empty: %d, is blocked queue mepty: %d, NOT is something running in processtable: %d, is time passed 3s : %d\n", isQueueEmpty(ready_queue), isQueueEmpty(blocked_queue), !isSomthingRunning(), current_time > 3 );
         if(isQueueEmpty(ready_queue) && isQueueEmpty(blocked_queue) && !isSomthingRunning() && current_time > 3){  //If all processes have finished work and have terminated, exit program
             break;
