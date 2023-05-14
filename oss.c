@@ -266,6 +266,14 @@ int main(int argc, char *argv[]){
     double currentTime;
 
     while(1) {
+
+    //ALL OUTPUT
+    //--OSS: Generating process with PID 3 and putting it in queue 0 at time 0:5000015
+    //OSS: Dispatching process with PID 3 from queue 0 at time 0:5000805,
+    //OSS: total time this dispatch was 790 nanoseconds,
+    //OSS: Receiving that process with PID 3 ran for 270000 nanoseconds,
+    //OSS: **WHAT DID IT CHOOSE IN WORKER**(not using its entire time quantum, used it's entire time quamtum, terminatedetc.)
+    //OSS: **WHAT QUEUE DOES IT GO IN AFTER CHOOSING**(Putting process with PID 3 into blocked queue 'OR' Putting process with PID 3 into ready queue)
         if(clock_gettime( CLOCK_REALTIME, &stop) == -1 ) {
             perror( "clock gettime" );
             return EXIT_FAILURE;
@@ -273,6 +281,7 @@ int main(int argc, char *argv[]){
         current_time = (double)(stop.tv_sec - start.tv_sec) + ((double)( stop.tv_nsec - start.tv_nsec))/BILLION;
 
         if(procNum == 0){
+            //procNum++;
             setItem(ready_queue, procNum, 0, 0); // put first process into ready queue
             procNum++;
             printf("CREATING NEW PROCESS\n");
@@ -340,6 +349,10 @@ int main(int argc, char *argv[]){
                 // fork error
                 perror("fork failed in parent");
             }
+        
+            // lets send a message only to specific child
+            buf.mtype = child[childNum];
+            buf.intData = child[childNum]; // we will give it the pid we are sending to, so we know it received it
 
             printf("Sending message to child %i with pid %d \n", childNum, child[childNum]);
             
