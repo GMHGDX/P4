@@ -398,7 +398,6 @@ int main(int argc, char *argv[]){
             recievedFromWorker = 0;    
         }
         
-
         //update all values in the table
         processTable[childrenToLaunch].pid = child[childNum];
         processTable[childrenToLaunch].sim_pid = simPID;
@@ -455,7 +454,7 @@ bool isSomthingRunning(){
 }
 
 //Print the process table
-void printTable(FILE* fileLogging){
+int printTable(FILE* fileLogging){
     printf("Position\tOccupied\tPID\t\tSimulated PID\t\tProcessNumber\t\tCPU Time\t\tSystem Time\n");
     fprintf(fileLogging, "Position\tOccupied\tPID\t\tSimulated PID\t\tProcessNumber\t\tCPU Time\t\tSystem Time\n");
     
