@@ -266,14 +266,12 @@ int main(int argc, char *argv[]){
         current_time = (double)(stop.tv_sec - start.tv_sec) + ((double)( stop.tv_nsec - start.tv_nsec))/BILLION;
 
         if(procNum == 0){
-            //procNum++;
             setItem(ready_queue, procNum, 0, 0); // put first process into ready queue
             procNum++;
-            printf("CREATING NEW PROCESS\n");
+            
         }
         if(procNum >= 1 && newProcTime <= current_time && current_time <= 3 && procNum < 10){    //Code to generate new process
             childNum++; //increment child for new message
-            //procNum++; //set next process (will be 2)
             simPID++; //increment simulated PID (will be 10001)
             childrenToLaunch++; //for the table
 
@@ -289,15 +287,13 @@ int main(int argc, char *argv[]){
             printf("random number - seconds: %f\n", newProcsSec);
             printf("random number - Nano: %f\n\n", newProcsNS);
 
-            printf("CREATING NEW PROCESS\n");
-
             setItem(ready_queue, procNum, 0, 0); // Puts a new process into ready queue
             procNum++; //set next process (will be 1)
         }
 
         //if the process number in the queue is -1, then there are no processes in the queue
         if(ready_queue[0].processNum == -1){
-            //printf("No items in the ready queue");
+            printf("No items in the ready queue");
         }
 
         //take process out of the ready queue that has been in there the longest 
@@ -310,6 +306,7 @@ int main(int argc, char *argv[]){
 
         //create child if there is a process in the ready queue
         if(currentP > -1){
+            printf("CREATING NEW PROCESS\n");
             pid = fork();
             if (pid > 0) {
                 // save this child's pid for sending message
