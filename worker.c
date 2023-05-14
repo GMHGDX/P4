@@ -7,6 +7,7 @@
 #include <stdlib.h> //EXIT_FAILURE
 #include <sys/msg.h> //message queues
 #include <unistd.h> //for pid_t and exec
+#include <time.h> //to create system time
 
 #define PERMS 0644
 
@@ -45,7 +46,6 @@ int main(int argc, char *argv[]){
     int random_event = randomNumberGenerator(100);
     int message_back;
     char usedQ[10];
-    int i;
 
     //uses up all time, returns to ready queue in oss
     if (random_event < 50){
