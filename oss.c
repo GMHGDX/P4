@@ -399,7 +399,7 @@ int main(int argc, char *argv[]){
         //update all values in the table
         processTable[childrenToLaunch].pid = child[childNum];
         processTable[childrenToLaunch].sim_pid = simPID;
-        processTable[childrenToLaunch].processNum = procNum-1;
+        processTable[childrenToLaunch].processNum = procNum;
         processTable[childrenToLaunch].total_CPU_time = recievedFromWorker;
 
         if(recievedFromWorker < 0){
