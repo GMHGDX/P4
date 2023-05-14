@@ -30,6 +30,7 @@ int main(int argc, char *argv[]){
     buf.mtype = 1;
     int msqid = 0;
     key_t key;
+
     srand(time(NULL)); //gets a random number for each child instead of the same
 
     // get the key for our message queue
@@ -39,13 +40,16 @@ int main(int argc, char *argv[]){
     if ((msqid = msgget(key, PERMS)) == -1) { perror("msgget in child"); exit(1); }
 
     // receive a message from oss, but only one for our PID
+    printf("Im about to recieve message!");
     if (msgrcv(msqid, &buf, sizeof(msgbuffer), getpid(), 0) == -1) { perror("failed to receive message from parent\n"); exit(1); }
-
+    printf("recieved message!");
     //initialization for the childs random, weighted, choosing period
     int quantum = atoi(buf.strData); //converts quantum message string to an integer
     int random_event = randomNumberGenerator(100);
     int message_back;
     char usedQ[10];
+
+    printf("This is me before the random event!");
 
     //uses up all time, returns to ready queue in oss
     if (random_event < 50){
@@ -62,7 +66,7 @@ int main(int argc, char *argv[]){
        message_back = -randomNumberGenerator(quantum-1);    //returns a negative
        printf("Worker: Child %d chose to use part of the time quantum and terminate\n",getpid());
     } 
-    printf("RANDOM EVENT: %i", random_event);
+    printf("This is me after the random event!");
     
     if(random_event < 80){
         //convert quantum int back to string to send message back to our parent
