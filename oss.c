@@ -256,7 +256,6 @@ int main(int argc, char *argv[]){
     double newProcsSec = randomNumberGenerator(maxSec);
     double newProcsNS = randomNumberGenerator(maxNano);
     double newProcTime = newProcsSec + (newProcsNS/BILLION);
-    int msgresult;
 
     while(1) {
         if(clock_gettime( CLOCK_REALTIME, &stop) == -1 ) {
@@ -266,12 +265,14 @@ int main(int argc, char *argv[]){
         current_time = (double)(stop.tv_sec - start.tv_sec) + ((double)( stop.tv_nsec - start.tv_nsec))/BILLION;
 
         if(procNum == 0){
+            //procNum++;
             setItem(ready_queue, procNum, 0, 0); // put first process into ready queue
             procNum++;
-            
+            printf("CREATING NEW PROCESS\n");
         }
         if(procNum >= 1 && newProcTime <= current_time && current_time <= 3 && procNum < 10){    //Code to generate new process
             childNum++; //increment child for new message
+            //procNum++; //set next process (will be 2)
             simPID++; //increment simulated PID (will be 10001)
             childrenToLaunch++; //for the table
 
@@ -287,13 +288,15 @@ int main(int argc, char *argv[]){
             printf("random number - seconds: %f\n", newProcsSec);
             printf("random number - Nano: %f\n\n", newProcsNS);
 
+            printf("CREATING NEW PROCESS\n");
+
             setItem(ready_queue, procNum, 0, 0); // Puts a new process into ready queue
             procNum++; //set next process (will be 1)
         }
 
         //if the process number in the queue is -1, then there are no processes in the queue
         if(ready_queue[0].processNum == -1){
-            printf("No items in the ready queue");
+            //printf("No items in the ready queue");
         }
 
         //take process out of the ready queue that has been in there the longest 
@@ -306,7 +309,6 @@ int main(int argc, char *argv[]){
 
         //create child if there is a process in the ready queue
         if(currentP > -1){
-            printf("CREATING NEW PROCESS\n");
             pid = fork();
             if (pid > 0) {
                 // save this child's pid for sending message
@@ -345,20 +347,11 @@ int main(int argc, char *argv[]){
         }
 
         //recieve message back from child in worker, decide where it goes in the queue
-        msgresult = (msgrcv(msqid, &rcvbuf,sizeof(msgbuffer), getpid(),IPC_NOWAIT) == -1); //{ perror("failed to receive message in parent\n"); exit(1);}
+        if (msgrcv(msqid, &rcvbuf,sizeof(msgbuffer), getpid(),0) == -1) { perror("failed to receive message in parent\n"); exit(1);}
         printf("Parent %d received message: %s my int data was %d\n",getpid(),rcvbuf.strData,rcvbuf.intData);
-        if(msgresult == -1){
-            if(errno == ENOMSG){
-                //didnt get message, ignore
-            }else{
-                printf("ERROR: Something wrong with message recieved");
-            }
-        }else{
+        
         if(rcvbuf.strData == 15200){
             printf("OSS: Generating process %i with PID %d and putting it in the ready queue at time %f\n", childNum, child[childNum], current_time);
-        }if(rcvbuf.strData < 0){
-            wait(0);
-            printf("OSS: Process %i is terminating", childNum);
         } else {
             printf("OSS: Generating process %i with PID %d and putting it in the blocked queue at time %f\n", childNum, child[childNum], current_time);
         }
@@ -416,7 +409,7 @@ int main(int argc, char *argv[]){
         }
 
         printTable(fileLogging);
-        }
+        
         //printf("is ready queue empty: %d, is blocked queue mepty: %d, NOT is something running in processtable: %d, is time passed 3s : %d\n", isQueueEmpty(ready_queue), isQueueEmpty(blocked_queue), !isSomthingRunning(), current_time > 3 );
         if(isQueueEmpty(ready_queue) && isQueueEmpty(blocked_queue) && !isSomthingRunning() && current_time > 3){  //If all processes have finished work and have terminated, exit program
             break;
@@ -475,5 +468,4 @@ int printTable(FILE* fileLogging){
         fprintf(fileLogging, "%i\t%i\t\t%d\t\t%d\t%i\t\t\t%f\t\t%f\n", i, processTable[i].occupied, (long)processTable[i].pid, (long)processTable[i].sim_pid, processTable[i].processNum,processTable[i].total_CPU_time, processTable[i].total_system_time);     
     }
 }
-
 

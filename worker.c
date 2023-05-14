@@ -30,9 +30,9 @@ int main(int argc, char *argv[]){
     buf.mtype = 1;
     int msqid = 0;
     key_t key;
-    printf("hi");
+    
     srand(time(NULL)); //gets a random number for each child instead of the same
-    printf("WORKER: Message queue key %i", key);
+
     // get the key for our message queue
     if ((key = ftok("oss.c", 1)) == -1) { perror("ftok"); exit(1); }
 
@@ -40,9 +40,8 @@ int main(int argc, char *argv[]){
     if ((msqid = msgget(key, PERMS)) == -1) { perror("msgget in child"); exit(1); }
 
     // receive a message from oss, but only one for our PID
-    printf("Im about to recieve message!");
     if (msgrcv(msqid, &buf, sizeof(msgbuffer), getpid(), 0) == -1) { perror("failed to receive message from parent\n"); exit(1); }
-    printf("recieved message!");
+
     //initialization for the childs random, weighted, choosing period
     int quantum = atoi(buf.strData); //converts quantum message string to an integer
     int random_event = randomNumberGenerator(100);
