@@ -350,9 +350,6 @@ int main(int argc, char *argv[]){
                 perror("fork failed in parent");
             }
         
-            // lets send a message only to specific child
-            buf.mtype = child[childNum];
-            buf.intData = child[childNum]; // we will give it the pid we are sending to, so we know it received it
 
             printf("Sending message to child %i with pid %d \n", childNum, child[childNum]);
             
