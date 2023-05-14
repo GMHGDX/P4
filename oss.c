@@ -266,14 +266,6 @@ int main(int argc, char *argv[]){
     double currentTime;
 
     while(1) {
-
-    //ALL OUTPUT
-    //--OSS: Generating process with PID 3 and putting it in queue 0 at time 0:5000015
-    //OSS: Dispatching process with PID 3 from queue 0 at time 0:5000805,
-    //OSS: total time this dispatch was 790 nanoseconds,
-    //OSS: Receiving that process with PID 3 ran for 270000 nanoseconds,
-    //OSS: **WHAT DID IT CHOOSE IN WORKER**(not using its entire time quantum, used it's entire time quamtum, terminatedetc.)
-    //OSS: **WHAT QUEUE DOES IT GO IN AFTER CHOOSING**(Putting process with PID 3 into blocked queue 'OR' Putting process with PID 3 into ready queue)
         if(clock_gettime( CLOCK_REALTIME, &stop) == -1 ) {
             perror( "clock gettime" );
             return EXIT_FAILURE;
@@ -281,7 +273,6 @@ int main(int argc, char *argv[]){
         current_time = (double)(stop.tv_sec - start.tv_sec) + ((double)( stop.tv_nsec - start.tv_nsec))/BILLION;
 
         if(procNum == 0){
-            //procNum++;
             setItem(ready_queue, procNum, 0, 0); // put first process into ready queue
             procNum++;
             printf("CREATING NEW PROCESS\n");
@@ -349,18 +340,14 @@ int main(int argc, char *argv[]){
                 // fork error
                 perror("fork failed in parent");
             }
-        
+
+            printf("Sending message to child %i with pid %d \n", childNum, child[childNum]);
+            
             // lets send a message only to specific child
             buf.mtype = child[childNum];
             buf.intData = child[childNum]; // we will give it the pid we are sending to, so we know it received it
-
-            printf("Sending message to child %i with pid %d \n", childNum, child[childNum]);
-
-            //message contains constant time quantum initialized in oss
-            strcpy(buf.strData, quantumForPID);
-
-            //send message to worker process
-            if (msgsnd(msqid, &buf, sizeof(msgbuffer)-sizeof(long), 0) == -1) {
+            strcpy(buf.strData, quantumForPID);//message contains constant time quantum initialized in oss
+            if (msgsnd(msqid, &buf, sizeof(msgbuffer)-sizeof(long), 0) == -1) { //send message to worker process
                 perror("msgsnd to child 1 failed\n");
                 exit(1);
             }
@@ -371,13 +358,15 @@ int main(int argc, char *argv[]){
         //recieve message back from child in worker, decide where it goes in the queue
         if (msgrcv(msqid, &rcvbuf,sizeof(msgbuffer), getpid(),0) == -1) { perror("failed to receive message in parent\n"); exit(1);}
         printf("Parent %d received message: %s my int data was %d\n",getpid(),rcvbuf.strData,rcvbuf.intData);
+        int recievedFromWorker = atoi(rcvbuf.strData); //converts message string from worker to an integer
+        int intDataWorker = atoi(rcvbuf.intData);
         
-        if(rcvbuf.strData == 15200){
+        if(recievedFromWorker == 15200){
             printf("OSS: Generating process %i with PID %d and putting it in the ready queue at time %f\n", childNum, child[childNum], current_time);
         } else {
             printf("OSS: Generating process %i with PID %d and putting it in the blocked queue at time %f\n", childNum, child[childNum], current_time);
         }
-        if (rcvbuf.intData > 0) {
+        if (intDataWorker > 0) {
             //Child(ren) have finished, start new chilren if needed, exit program if all children have finished
             for(i = 0; i < 20; i++){
                 if(processTable[i].pid == rcvbuf.intData){
@@ -386,9 +375,7 @@ int main(int argc, char *argv[]){
                 }
             }
          }
-
-        int recievedFromWorker = atoi(rcvbuf.strData); //converts message string from worker to an integer
-
+         
         //used all time, put in ready queue
         if(recievedFromWorker == quantum){
             printf("used all time, put in ready queue!\n");
