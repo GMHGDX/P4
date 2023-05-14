@@ -264,15 +264,8 @@ int main(int argc, char *argv[]){
         }
         current_time = (double)(stop.tv_sec - start.tv_sec) + ((double)( stop.tv_nsec - start.tv_nsec))/BILLION;
 
-        if(procNum == 0){
-            //procNum++;
-            setItem(ready_queue, procNum, 0, 0); // put first process into ready queue
-            procNum++;
-            printf("CREATING NEW PROCESS\n");
-        }
-        if(procNum >= 1 && newProcTime <= current_time && current_time <= 3 && procNum < 10){    //Code to generate new process
+        if(procNum >= 0 && newProcTime <= current_time && current_time <= 3 && procNum < 10){    //Code to generate new process
             childNum++; //increment child for new message
-            //procNum++; //set next process (will be 2)
             simPID++; //increment simulated PID (will be 10001)
             childrenToLaunch++; //for the table
 
@@ -411,9 +404,9 @@ int main(int argc, char *argv[]){
         printTable(fileLogging);
         
         //printf("is ready queue empty: %d, is blocked queue mepty: %d, NOT is something running in processtable: %d, is time passed 3s : %d\n", isQueueEmpty(ready_queue), isQueueEmpty(blocked_queue), !isSomthingRunning(), current_time > 3 );
-        if(isQueueEmpty(ready_queue) && isQueueEmpty(blocked_queue) && !isSomthingRunning() && current_time > 3){  //If all processes have finished work and have terminated, exit program
-            break;
-        }
+        // if(isQueueEmpty(ready_queue) && isQueueEmpty(blocked_queue) && !isSomthingRunning() && current_time > 3){  //If all processes have finished work and have terminated, exit program
+        //     break;
+        // }
         if(procNum == 2){
             break;
         }
