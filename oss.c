@@ -213,7 +213,7 @@ int main(int argc, char *argv[]){
     }
 
     //Open the log file before input begins 
-    int fileLogging = fopen(logFile, "w+");
+    fileLogging = fopen(logFile, "w+");
     
     //beginning of sending and recieving messages 
     msgbuffer buf;
@@ -454,7 +454,7 @@ bool isSomthingRunning(){
 }
 
 //Print the process table
-int printTable(FILE* fileLogging){
+void printTable(FILE* fileLogging){
     printf("Position\tOccupied\tPID\t\tSimulated PID\t\tProcessNumber\t\tCPU Time\t\tSystem Time\n");
     fprintf(fileLogging, "Position\tOccupied\tPID\t\tSimulated PID\t\tProcessNumber\t\tCPU Time\t\tSystem Time\n");
     
